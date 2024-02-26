@@ -13,6 +13,7 @@ import platform
 class Acq_Run:
 
     def __init__(self):
+        #   tanjiawnen 
         self.Core = Acq_Core()
 
     def Led_init_log(self):
