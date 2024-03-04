@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>450</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>350</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="currentIndex">
+    <number>4</number>
+   </property>
+   <widget class="QWidget" name="page">
+    <widget class="QLabel" name="delete_icon_label">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>240</y>
+       <width>80</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;幼圆&quot;;
+border:4px solid rgb(0,0,0);
+background-color: rgb(255, 255, 255);
+border-radius: 35px;
+
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAdd">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>40</y>
+       <width>280</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+font: 20pt &quot;宋体&quot;;
+border:4px solid rgb(0,0,0);
+background-color:#05abc2;
+border-radius: 35px;
+}
+
+QPushButton:pressed{
+background-color: rgb(255, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>    添加试剂卡</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnModify">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>140</y>
+       <width>280</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+font: 20pt &quot;宋体&quot;;
+border:4px solid rgb(0,0,0);
+background-color:#05abc2;
+border-radius: 35px;
+}
+
+QPushButton:pressed{
+background-color: rgb(255, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>    修改试剂卡</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>121</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>检疫设置</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="add_icon_label">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>40</y>
+       <width>80</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;幼圆&quot;;
+border:4px solid rgb(0,0,0);
+background-color: rgb(255, 255, 255);
+border-radius: 35px;
+
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnDelete">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>240</y>
+       <width>280</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+font: 20pt &quot;宋体&quot;;
+border:4px solid rgb(0,0,0);
+background-color:#05abc2;
+border-radius: 35px;
+}
+
+QPushButton:pressed{
+background-color: rgb(255, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>   删除试剂卡</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="edit_icon_label">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>140</y>
+       <width>80</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;幼圆&quot;;
+border:4px solid rgb(0,0,0);
+background-color: rgb(255, 255, 255);
+border-radius: 35px;
+
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <zorder>btnAdd</zorder>
+    <zorder>btnModify</zorder>
+    <zorder>label</zorder>
+    <zorder>add_icon_label</zorder>
+    <zorder>btnDelete</zorder>
+    <zorder>edit_icon_label</zorder>
+    <zorder>delete_icon_label</zorder>
+   </widget>
+   <widget class="QWidget" name="page2">
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>378</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>添加试剂卡</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>200</y>
+       <width>151</width>
+       <height>44</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>规格</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="nameLine">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>90</y>
+       <width>230</width>
+       <height>70</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;
+color: rgb(255, 255, 255);
+background-color: rgb(0, 0, 0);</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="rowCb">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>190</y>
+       <width>230</width>
+       <height>70</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QComboBox::drop-down{
+width:56px;  height:56px;
+}
+
+QComboBox{
+font: 20pt &quot;宋体&quot;;
+color: rgb(255, 255, 255);
+background-color: rgb(0, 0, 0);
+}
+
+QComboBox QAbstractItemView {
+	background-color: rgb(0, 0, 0);/*背景颜色*/
+    padding: 1px 2px 1px 2px;  /*针对于组合框中的文本内容*/
+	color: rgb(255,255,255)
+}</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>100</y>
+       <width>211</width>
+       <height>44</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>试剂卡型号</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page3">
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>161</width>
+       <height>47</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>删除试剂卡</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="deleteCb">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>140</y>
+       <width>230</width>
+       <height>70</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QComboBox::drop-down{
+width:56px;  height:56px;
+}
+
+QComboBox{
+font: 20pt &quot;宋体&quot;;
+color: rgb(255, 255, 255);
+background-color: rgb(0, 0, 0);
+}
+
+QComboBox QAbstractItemView {
+	background-color: rgb(0, 0, 0);/*背景颜色*/
+    padding: 1px 2px 1px 2px;  /*针对于组合框中的文本内容*/
+	color: rgb(255,255,255)
+}</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>140</y>
+       <width>181</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>试剂卡型号</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page4">
+    <widget class="QComboBox" name="editCb">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>140</y>
+       <width>230</width>
+       <height>70</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QComboBox::drop-down{
+width:56px;  height:56px;
+}
+
+QComboBox{
+font: 20pt &quot;宋体&quot;;
+color: rgb(255, 255, 255);
+background-color: rgb(0, 0, 0);
+}
+
+QComboBox QAbstractItemView {
+	background-color: rgb(0, 0, 0);/*背景颜色*/
+    padding: 1px 2px 1px 2px;  /*针对于组合框中的文本内容*/
+	color: rgb(255,255,255)
+}</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>140</y>
+       <width>180</width>
+       <height>70</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>试剂卡型号</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>161</width>
+       <height>47</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;宋体&quot;;</string>
+     </property>
+     <property name="text">
+      <string>修改试剂卡</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page5">
+    <widget class="QTableView" name="reagentTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>781</width>
+       <height>334</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#reagentTable
+{	
+font: 20pt &quot;宋体&quot;;
+border:4px solid rgb(0,0,0);
+background-color:rgb(255,255,255);
+}
+
+QComboBox {
+   font: 20pt &quot;宋体&quot;;
+	color: rgb(255, 255, 255);
+	background-color: rgb(0, 0, 0);
+}
+
+QComboBox QAbstractItemView {
+	background-color: rgb(0, 0, 0);/*背景颜色*/
+    padding: 1px 2px 1px 2px;  /*针对于组合框中的文本内容*/
+	color: rgb(255,255,255)
+}</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>350</y>
+     <width>800</width>
+     <height>100</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QPushButton" name="btnConfirm">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>380</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+font: 20pt &quot;宋体&quot;;
+border:4px solid rgb(0,0,0);
+background-color:#05abc2;
+}
+
+QPushButton:pressed{
+background-color: rgb(255, 0, 0);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>确认</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnReturn">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>10</y>
+      <width>380</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+font: 20pt &quot;宋体&quot;;
+border:4px solid rgb(0,0,0);
+background-color:#05abc2;
+}
+
+QPushButton:pressed{
+background-color: rgb(255, 0, 0);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>返回</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
