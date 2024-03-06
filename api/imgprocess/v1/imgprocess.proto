@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+service ImgProcesser {
+    rpc ImgProcess (ImgProcessRequest) returns (ImgProcessReply) {}
+}
+
+message ImgProcessRequest {
+    string name = 1;
+}
+
+message ImgProcessReply {
+    string message = 1;
+    int32 code = 2;
+}

@@ -27,7 +27,7 @@ class ClearThread(AbstractThread):
     @detail 构造函数
     """
     def __init__(self, clear_time=None, parent=None):
-        super().__init__(parent)
+        super().__init__()
         sys.excepthook = self.HandleException
         self.clear_time = clear_time
 

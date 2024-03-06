@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "qt0223/api/helloworld/v1;v1;";
+
+service Updater {
+    rpc UpdateSoftware (UpdateRequest) returns (UpdateReply) {}
+}
+
+message UpdateRequest {
+    string name = 1;
+}
+
+message UpdateReply {
+    string message = 1;
+    int32 code = 2;
+}

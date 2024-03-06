@@ -5,12 +5,29 @@
 """
 from concurrent import futures
 import logging
+import sys
+import datetime
+sys.path.append("..")
 
+import tempfile
+import zipfile
+import shutil
+import os
 import grpc
 try:
     from api.helloworld.v1 import helloworld_pb2, helloworld_pb2_grpc
+    from api.update.v1 import update_pb2, update_pb2_grpc
+    from api.imgprocess.v1 import imgprocess_pb2, imgprocess_pb2_grpc
+    from pic_code.img_main import img_main
+    import middleware.database as insertdb
+    import util.frozen as frozen
 except ModuleNotFoundError:
     from qt0223.api.helloworld.v1 import helloworld_pb2, helloworld_pb2_grpc
+    from qt0223.api.update.v1 import update_pb2, update_pb2_grpc
+    from qt0223.api.imgprocess.v1 import imgprocess_pb2, imgprocess_pb2_grpc
+    import qt0223.util.frozen as frozen
+    from qt0223.pic_code.img_main import img_main
+    import qt0223.middleware.database as insertdb
 
 
 class Greeter(helloworld_pb2_grpc.GreeterServicer):
@@ -21,12 +38,92 @@ class Greeter(helloworld_pb2_grpc.GreeterServicer):
         return helloworld_pb2.HelloReplyAgain(message=f"Hello again, {request.name}!", code=202)
 
 
+class Updater(update_pb2_grpc.UpdaterServicer):
+    def UpdateSoftware(self, request, context):
+        print(request.name)
+        MY_ZIP = frozen.app_path() + r'/update.zip'
+        try:
+            # creating a template directory to unzip file
+            with tempfile.TemporaryDirectory() as tempdir:
+                with zipfile.ZipFile(MY_ZIP, 'r') as zip_ref:
+                    zip_ref.extractall(tempdir)
+                # copying tempfile to target directory
+                flag = shutil.copytree(tempdir, os.path.dirname(os.path.dirname(MY_ZIP)), dirs_exist_ok=True)
+                print("flag:", flag)
+                msg = "succeed"
+                code = 202
+                return update_pb2.UpdateReply(message=msg, code=code)
+        except Exception as e:
+            if os.path.exists(MY_ZIP):
+                os.remove(MY_ZIP)
+            msg = "failed"
+            code = 404
+            return update_pb2.UpdateReply(message=msg, code=code)
+
+
+class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
+    def ImgProcess(self, request, context):
+        print(request.name)
+        pic_path = datetime.datetime.now().strftime("%Y-%m-%d")
+        time_now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        path_cache = frozen.app_path() + r'/pic_code/img/img_cache/'
+        path_save = frozen.app_path() + r'/pic_code/img/img_tem/'
+
+        try:
+            Main = img_main()
+            Camera_Init_flag = Main.imgAcquire(
+                path_chache=path_cache,
+                path_save=path_save,
+                name="%s" % time_now
+            )
+            if Camera_Init_flag is not True:
+                raise Exception
+            item_type = request.name
+            judge_flag, gray_aver, nature_aver = Main.imgProcess(
+                read=frozen.app_path() + r'/pic_code/img/img_tem/' + time_now + '.jpeg',
+                write=frozen.app_path() + r'/pic_code/img/img_out/',
+                combina=item_type,
+                radius=40
+            )
+            if judge_flag is not True:
+                raise Exception
+            w, h = nature_aver.shape
+            print(w, h)
+            antibody_test_results = []
+            antibody_test_points = []
+            nature_aver_list = []
+            gray_aver_list = []
+            for i in range(w):
+                for j in range(h):
+                    nature_aver_list.append(nature_aver[i][j])
+                    gray_aver_list.append(str(gray_aver[i][j]))
+            nature_aver_str = ",".join(nature_aver_list)
+            gray_aver_str = ",".join(gray_aver_list)
+            # insert database
+            data = dict(
+                reagent_type=item_type,
+                reagent_photo=time_now,
+                gray_aver=gray_aver_str,
+                nature_aver=nature_aver_str
+            )
+            insertdb.insertMySql(data)
+            msg = "succeed"
+            code = 202
+            return imgprocess_pb2.ImgProcessReply(message=time_now, code=202)
+        except Exception as e:
+            msg = "failed"
+            code = 404
+            return imgprocess_pb2.ImgProcessReply(message=msg, code=code)
+
+
 def serve():
     port = "50051"
     # 实例化server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     # 注册逻辑到server中
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
+    update_pb2_grpc.add_UpdaterServicer_to_server(Updater(), server)
+    imgprocess_pb2_grpc.add_ImgProcesserServicer_to_server(ImgProcesser(), server)
     # 启动server
     server.add_insecure_port("[::]:" + port)
     server.start()

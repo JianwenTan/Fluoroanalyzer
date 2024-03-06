@@ -3,7 +3,7 @@
 @Author：mysondrink@163.com
 @Time：2024/1/10 11:18
 """
-from PySide2.QtSql import QSqlQuery, QSqlDatabase
+import sqlite3
 try:
     import util.frozen as frozen
     from controller.AbstractController import AbstractController
@@ -36,27 +36,32 @@ class LoginController(AbstractController):
         Returns:
             None
         """
+        connection = sqlite3.connect(SQL_PATH)
         # MySQL语句
         sql = 'SELECT * FROM user_table'
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName(SQL_PATH)
-        db.open()
+        # 获取标记
+        cursor = connection.cursor()
         try:
-            q = QSqlQuery()
-            q.exec_(sql)
+            # 执行SQL语句
+            cursor.execute(sql)
+            # 提交事务
+            connection.commit()
         except Exception as e:
-            print(e)
+            # print(str(e))
+            # 有异常，回滚事务
+            connection.rollback()
         user_name = []
         user_code = []
 
-        while q.next():
-            user_name.append(q.value(0))
-            user_code.append(q.value(1))
+        for x in cursor.fetchall():
+            user_name.append(x[0])
+            user_code.append(x[1])
 
         self.user_dict = dict(zip(user_name, user_code))
 
         # 释放内存
-        db.close()
+        cursor.close()
+        connection.close()
 
     def authUser(self, msg) -> None:
         """

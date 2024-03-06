@@ -2,7 +2,10 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import helloworld_pb2 as helloworld__pb2
+try:
+    from api.helloworld.v1 import helloworld_pb2 as helloworld__pb2
+except ModuleNotFoundError:
+    from qt0223.api.helloworld.v1 import helloworld_pb2 as helloworld__pb2
 
 
 class GreeterStub(object):

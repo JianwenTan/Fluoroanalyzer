@@ -1,5 +1,5 @@
 """
-@Description：病人信息模型
+@Description：
 @Author：mysondrink@163.com
 @Time：2024/3/1 11:58
 """

@@ -6,15 +6,15 @@
 try:
     import util.frozen as frozen
     from view.gui.update import *
-    # from func.infoPage import infoMessage
     from view.AbstractPage import AbstractPage, ProcessDialog
     from pic_code.img_main import img_main
+    from controller.UpdateController import MyUpdateThread
 except ModuleNotFoundError:
     import qt0223.util.frozen as frozen
     from qt0223.view.gui.update import *
-    # from func.infoPage import infoMessage
     from qt0223.view.AbstractPage import AbstractPage, ProcessDialog
     from qt0223.pic_code.img_main import img_main
+    from qt0223.controller.UpdateController import MyUpdateThread
 
 
 class UpdatePage(Ui_Form, AbstractPage):
@@ -58,6 +58,22 @@ class UpdatePage(Ui_Form, AbstractPage):
         self.ui.restart_icon_label.setPixmap(pixImg)
         self.ui.restart_icon_label.setAlignment(Qt.AlignCenter)
 
+    def updateInfo(self, msg):
+        src_path = "/mnt/mydev/update.zip"
+        identifier = "0xc009d7d1"
+        save_path = '/home/orangepi/Desktop/qt0922/update.zip'
+        # Main = img_main()
+        # if Main.mountMove(src_path, save_path, identifier):
+        #     info = "更新成功！请自行重启"
+        # else:
+        #     info = "更新失败！"
+        code = msg['code']
+        if code == 202:
+            info = "更新成功！请自行重启"
+        elif code == 404:
+            info = "更新失败！"
+        self.showInfoDialog(info)
+
     """
     @detail 返回按钮操作
     @detail 槽函数
@@ -75,17 +91,10 @@ class UpdatePage(Ui_Form, AbstractPage):
         dialog.setParent(self)
         dialog.hideBtn()
         dialog.show()
-        src_path =  "/mnt/mydev/software"
-        identifier = "0xc009d7d1"
-        save_path = '/home/orangepi/Desktop/qt0922/software'
-        Main = img_main()
-        if Main.mountMove(src_path, save_path, identifier):
-            dialog.closeDialog()
-            info = "更新成功！请自行重启"
-        else:
-            dialog.closeDialog()
-            info = "更新失败！"
-        self.showInfoDialog(info)
+        updatethread = MyUpdateThread()
+        updatethread.finished.connect(dialog.closeDialog)
+        updatethread.update_json.connect(self.updateInfo)
+        updatethread.start()
 
     @Slot()
     def on_btnRestart_clicked(self):

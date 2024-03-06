@@ -3,7 +3,7 @@
 @Author：mysondrink@163.com
 @Time：2024/1/11 17:17
 """
-from PySide2.QtSql import QSqlQuery, QSqlDatabase
+import sqlite3
 try:
     import util.frozen as frozen
     from controller.AbstractController import AbstractController
@@ -35,20 +35,23 @@ class RegisterController(AbstractController):
         """
         user_name = username
         user_code = usercode
+        connection = sqlite3.connect(SQL_PATH)
         # MySQL语句
-        sql = 'INSERT INTO user_table(user_name, user_code) VALUES (%s,%s)'
+        sql = 'INSERT IGNORE INTO user_table(user_name, user_code) VALUES (%s,%s)'
 
         # 获取标记
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName(SQL_PATH)
-        db.open()
+        cursor = connection.cursor()
         try:
-            q = QSqlQuery()
-            q.exec_(sql % (user_name, user_code))
             # 执行SQL语句
+            cursor.execute(sql, [user_name, user_code])
+            # 提交事务
+            connection.commit()
         except Exception as e:
-            print(e)
+            # print(str(e))
+            # 有异常，回滚事务
+            connection.rollback()
         # 释放内存
-        db.close()
+        cursor.close()
+        connection.close()
 
         self.update_json.emit(dict(code=SUCCEED_CODE))

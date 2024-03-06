@@ -149,19 +149,6 @@ class HomePage(Ui_Form, AbstractPage):
         page_msg = 'HistoryPage'
         self.next_page.emit(page_msg)
 
-    # @Slot()
-    # def on_btnSet_clicked(self) -> None:
-    #     """
-    #     弃用
-    #
-    #     槽函数
-    #     检疫设置按钮操作，跳转到检疫设置界面
-    #     Returns:
-    #         None
-    #     """
-    #     page_msg = 'EditPage'
-    #     self.next_page.emit(page_msg)
-
     @Slot()
     def on_btnSet_clicked(self) -> None:
         page_msg = 'RegPage'

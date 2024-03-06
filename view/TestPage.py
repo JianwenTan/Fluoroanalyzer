@@ -1,7 +1,8 @@
 import os
 import cv2 as cv
 import random
-from PySide2.QtSql import QSqlDatabase, QSqlQuery
+import sqlite3
+import re
 try:
     from view.gui.test import *
     from controller.PicController import MyPicThread
@@ -58,9 +59,6 @@ class TestPage(Ui_Form, AbstractPage):
         self.genderCb.setId(self.ui.radioButton_2, 2)
         self.ui.exeTable.horizontalHeader().close()
         self.ui.exeTable.verticalHeader().close()
-
-        self.mypicthread = MyPicThread()
-        self.mypicthread.finished.connect(self.takePicture)
 
         self.setFocusWidget()
         self.installEvent()
@@ -331,30 +329,31 @@ class TestPage(Ui_Form, AbstractPage):
         cur_time = QDateTime.currentDateTime().toString('yyyy-MM-dd hh:mm:ss')
         # time_now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         pic_path = QDateTime.currentDateTime().toString('yyyy-MM-dd')
-        time_now = msg
+        time_now = msg['timenow']
+        judge_flag = msg['flag']
         name_pic = time_now
         try:
-            judge_flag, gray_aver, nature_aver, gray_aver_str, nature_aver_str = self.mypicthread.getGrayAver()
-            if judge_flag != 1:
+            # judge_flag, gray_aver, nature_aver, gray_aver_str, nature_aver_str = self.mypicthread.getGrayAver()
+            # judge_flag = self.mypicthread.getGrayAver()
+            if judge_flag is False:
                 m_title = ""
                 m_info = "本次检测结果无效，建议重新进行检测"
                 # infoMessage(m_info, m_title, 180)
                 # self.update_info.emit(m_info)
-                self.update_info.emit(dict(info=m_info, code=201))
+                self.showInfoDialog(m_info)
+                # self.update_info.emit(dict(info=m_info, code=201))
                 return
-            # gray_row = len(_matrix) - 1
-            # gray_column = len(_matrix[0])
-            # point_list = _matrix[0]
-            gray_row = 8
-            gray_column = 5
-            point_list = gray_aver[0]
-            point_str = ''
-            for i in point_list:
-                if i < 0:
-                    point_str = point_str + ','
-                else:
-                    point_str = point_str + ',' + str(i)
-            point_str = point_str[1:]
+            # return
+            # gray_row = 8
+            # gray_column = 5
+            # point_list = gray_aver[0]
+            # point_str = ''
+            # for i in point_list:
+            #     if i < 0:
+            #         point_str = point_str + ','
+            #     else:
+            #         point_str = point_str + ',' + str(i)
+            # point_str = point_str[1:]
             # gray_aver = _matrix[1:]
         except Exception as e:
             self.sendException()
@@ -383,10 +382,9 @@ class TestPage(Ui_Form, AbstractPage):
         save_path = frozen.app_path() + r'/img/' + r'/' + pic_path + r'/' + name_pic + '-4.jpeg'
         dirs.makedir(save_path)
         flag_bool = cv.imwrite(save_path, img_show_final)
+        
 
-        # self.testinfo.closeWin()
         page_msg = 'DataPage'
-        # page_msg = 'newDataPage'
         self.next_page.emit(page_msg)
 
         patient_id = random.randint(1000, 1999)
@@ -413,24 +411,88 @@ class TestPage(Ui_Form, AbstractPage):
         matrix = self.ui.typeLabel.text()
         code_num = random.randint(1000, 19999)
         reagent_matrix_info = self.readPixtableNum()
-        # reagent_matrix_info = self.global_allergen
-        # new data
-        data_json = dict(patient_id=patient_id, patient_name=patient_name,
-                         patient_age=patient_age, patient_gender=patient_gender,
-                         item_type=item_type, pic_name=pic_name,
-                         time=test_time, doctor=doctor,
-                         depart=depart, age=age,
-                         gender=gender, name=name,
-                         matrix=matrix, code_num=code_num,
-                         gray_aver=gray_aver, gray_row=gray_row,
-                         gray_column=gray_column, pic_path=pic_path,
-                         name_pic=name_pic, row_exetable=self.row_exetable,
-                         column_exetable=self.column_exetable, reagent_matrix_info=reagent_matrix_info,
-                         nature_aver=nature_aver, gray_aver_str=gray_aver_str,
-                         nature_aver_str=nature_aver_str,point_str=point_str)
+        matrix_str = ','.join(','.join(row) for row in reagent_matrix_info)
+        reagent_matrix_info = re.split(r",", matrix_str)
+
+        # selecting database get info eg: gray_aver allergen-points about reagent-test result
+        gray_aver_sql = insertdb.selectMySql(time_now)
+        gray_list = re.split(r",", gray_aver_sql)
+        point_list = gray_list[:5]
+        point_str = ""
+        for i in point_list:
+            if int(i) < 0:
+                point_str = point_str + ','
+            else:
+                point_str = point_str + ',' + i
+        point_str = point_str[1:]
+        # creating empty list to merge
+        result = []
+
+        # looping merge two list, 5 elements from list1, 10 elements from list2
+        for i in range(len(gray_list[5:]) // 10):
+            sublist1 = reagent_matrix_info[i * 5:i * 5 + 5]
+            sublist2 = gray_list[5:][i * 10:i * 10 + 10]
+            result.extend(sublist1 + sublist2)
+
+        reagent_matrix_info = ",".join(result)
+        reagent_time = test_time[0]
+        reagent_time_detail = test_time[1]
+        reagent_code = code_num
+        reagent_matrix = matrix
+
+        # structuring patient insert info
+        info_json = dict(
+            patient_name=patient_name,
+            patient_id=patient_id,
+            patient_age=patient_age,
+            patient_gender=patient_gender
+        )
+
+        # structuring reagent insert info
+        data_json = dict(
+            patient_id=patient_id,
+            reagent_time=reagent_time,
+            reagent_code=reagent_code,
+            doctor=doctor,
+            depart=depart,
+            reagent_matrix=reagent_matrix,
+            reagent_time_detail=reagent_time_detail,
+            reagent_matrix_info=reagent_matrix_info,
+            patient_name=patient_name,
+            patient_age=patient_age,
+            patient_gender=patient_gender,
+            points=point_str,
+            reagent_photo=time_now
+        )
+
+        # insert to sqlite database
+        insertdb.insertMySql(info_json, data_json)
+        data_json = insertdb.changePhoto(time_now)
         info_msg = 201
         self.update_json.emit(dict(info=info_msg, data=data_json))
         return
+
+    def updateSql(self):
+        matrix = self.readPixtableNum(2)
+        connection = pymysql.connect(host="127.0.0.1", user="root", password="password", port=3306, database="test",
+                                     charset='utf8')
+        # MySQL语句
+        sql = 'UPDATE matrix_table SET reagent_matrix_info = %s WHERE reagent_type= %s AND reagent_matrix = %s'
+
+        # 获取标记
+        cursor = connection.cursor()
+        try:
+            # 执行SQL语句
+            cursor.execute(sql, [matrix, name, item_type])
+            # 提交事务
+            connection.commit()
+        except Exception as e:
+            # print(str(e))
+            # 有异常，回滚事务
+            connection.rollback()
+        # 释放内存
+        cursor.close()
+        connection.close()
 
     def readPixtableNum(self):
         reagent_matrix_info = []
@@ -458,23 +520,24 @@ class TestPage(Ui_Form, AbstractPage):
         """
         # MySQL语句
         sql = 'SELECT * FROM matrix_table'
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName(SQL_PATH)
-        db.open()
+        conn = sqlite3.connect(SQL_PATH)
+        cur = conn.cursor()
         try:
-            q = QSqlQuery()
-            q.exec_(sql)
+            cur.execute(sql)
+            conn.commit()
         except Exception as e:
-            print(e)
             # 有异常，回滚事务
+            print(e)
+            conn.rollback()
         self.reagent_type = []
         self.reagent_matrix = []
         self.reagent_matrix_info = []
-        while q.next():
-            self.reagent_type.append(q.value(1))
-            self.reagent_matrix.append(q.value(2))
-            self.reagent_matrix_info.append(q.value(3))
-        db.close()
+        for x in cur.fetchall():
+            self.reagent_type.append(x[1])
+            self.reagent_matrix.append(x[2])
+            self.reagent_matrix_info.append(x[3])
+        cur.close()
+        conn.close()
 
     @Slot()
     def on_btnReturn_clicked(self) -> None:
@@ -535,10 +598,12 @@ class TestPage(Ui_Form, AbstractPage):
         dialog.hideBtn()
         dialog.show()
         # self.testinfo.show()
-        self.mypicthread.setType(self.ui.modeBox_1.currentText())
-        self.mypicthread.finished.connect(dialog.closeDialog)
+        mypicthread = MyPicThread()
+        mypicthread.update_json.connect(self.takePicture)
+        mypicthread.finished.connect(dialog.closeDialog)
+        mypicthread.setType(self.ui.modeBox_1.currentText())
         try:
-            self.mypicthread.start()
+            mypicthread.start()
         except Exception as e:
             dialog.closeDialog()
         print("test start!")

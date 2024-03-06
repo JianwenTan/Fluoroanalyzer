@@ -98,7 +98,7 @@ class LoadPage(Ui_Form, AbstractPage):
         self.ui.btnRetry.hide()
         # self.ui.textEdit.setEnabled(False)
         # self.setWindowFlags(Qt.WindowStaysOnTopHint)
-        self.setWindowFlags(Qt.FramelessWindowHint)  # 去掉窗口状态栏
+        # self.setWindowFlags(Qt.FramelessWindowHint)  # 去掉窗口状态栏
         self.setAttribute(Qt.WA_TranslucentBackground)  # 窗口背景透明
         self.setFocusPolicy(Qt.NoFocus)
         self.ui.centerframe.setFrameStyle(QFrame.NoFrame)

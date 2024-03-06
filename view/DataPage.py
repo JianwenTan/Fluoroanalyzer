@@ -10,7 +10,8 @@ try:
     from util.report import MyReport
     from view.AbstractPage import AbstractPage, ProcessDialog
     from controller.USBController import CheckUSBThread
-    import middleware.database as insertdb
+    # import middleware.database as insertdb
+    from pic_code.img_main import img_main
 except ModuleNotFoundError:
     from qt0223.view.gui.info import *
     import qt0223.util.frozen as frozen
@@ -18,7 +19,8 @@ except ModuleNotFoundError:
     from qt0223.util.report import MyReport
     from qt0223.view.AbstractPage import AbstractPage, ProcessDialog
     from qt0223.controller.USBController import CheckUSBThread
-    import qt0223.middleware.database as insertdb
+    # import qt0223.middleware.database as insertdb
+    from qt0223.pic_code.img_main import img_main
 
 
 
@@ -143,7 +145,7 @@ class DataPage(Ui_Form, AbstractPage):
 
         self.ui.rightLabel.setText(self.test_time)
         self.ui.leftLabel.setText(self.test_time)
-
+        """
         self.pic_para = 1
         if self.info == 201:
             self.point_list = self.data['point_str']
@@ -180,12 +182,16 @@ class DataPage(Ui_Form, AbstractPage):
             self.allergy_info = reagent_matrix_info
             point_str = self.data['point_str']
             self.showDataView(point_str + ',' + reagent_matrix_info)
-
+        """
+        self.allergy_info = reagent_matrix_info
+        point_str = self.data['point_str']
+        self.showDataView(point_str + ',' + reagent_matrix_info)
+        # creating a report display
         self.setTableWidget(self.data['item_type'], self.allergy_info, self.data['nature_aver_str'])
 
     def insertMysql(self, name_pic, cur_time) -> None:
         """
-        需要修改
+        弃用
         连接数据库，写入图片信息
         Args:
             name_pic: 保存图片的图片名
@@ -238,7 +244,7 @@ class DataPage(Ui_Form, AbstractPage):
         self.myreport = QTextEdit()
         # 姓名，性别，样本号，条码号，样本类型，测试时间，【结果】，打印时间
         # cur_time[0] + ' ' + cur_time[1]
-        str_list = [self.data['patient_name'], self.data['patient_gender'], self.data['patient_id'],
+        str_list = [self.data['patient_name'], self.data['patient_gender'], self.data['reagent_id'],
                     self.data['code_num'], self.data['item_type'],
                     self.data['time'][0] + ' ' + self.data['time'][1],
                     text[1], '']
@@ -249,6 +255,7 @@ class DataPage(Ui_Form, AbstractPage):
 
     def readPixtable(self) -> str:
         """
+        弃用
         读取表格内容，同时以str形式保存到数据库
         Returns:
             str
@@ -272,23 +279,14 @@ class DataPage(Ui_Form, AbstractPage):
         """
         if msg == 202:
             self.usbthread.deleteLater()
-            # m_title = ""
-            # m_info = "下载完成！"
-            # infoMessage(m_info, m_title, 300)
             info = "下载完成！"
             self.showInfoDialog(info)
         elif msg == 404:
             self.usbthread.deleteLater()
-            # m_title = ""
-            # m_info = "U盘未插入或无法访问！"
-            # infoMessage(m_info, m_title)
             info = "U盘未插入或无法访问！"
             self.showInfoDialog(info)
         elif msg == 405:
             self.usbthread.deleteLater()
-            # m_title = ""
-            # m_info = "图片读取失败或未找到图片！"
-            # infoMessage(m_info, m_title)
             info = "图片读取失败或未找到图片！"
             self.showInfoDialog(info)
 
@@ -346,12 +344,6 @@ class DataPage(Ui_Form, AbstractPage):
         matrix_nature_aver = array_nature_aver.reshape(9, 5)
         Data_Nature = matrix_nature_aver
         Data_Light = matrix_gray_aver
-        return
-        # myEm5822_Print = Em5822_Print()
-        # myEm5822_Print.em5822_print(Data_Base, Data_Nature, Data_Light)
-        # m_title = ""
-        # m_info = "输出表格成功!"
-        # infoMessage(m_info, m_title, 300)
         Main = img_main()
         if Main.natPrint(Data_Base, Data_Nature, Data_Light):
             dialog.closeDialog()

@@ -22,9 +22,13 @@
 
 ## 使用说明
 
+```
 python main.py
+```
 or
+```
 python3 main.py
+```
 
 ## 文件目录说明
 eg:
@@ -55,7 +59,6 @@ qt
 git
 
 ## 贡献者
-
-## 作者
 mysondrink@163.com
 github.com/mysondrink
+## 作者

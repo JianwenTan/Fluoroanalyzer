@@ -8,27 +8,23 @@ import shutil
 import datetime
 import sys
 import math
-from PySide2.QtSql import QSqlQuery, QSqlDatabase
+import sqlite3
 try:
     from third_party.keyboard.keyboard import KeyBoard
-    # from func.testinfo import MyTestInfo
     from view.gui.history import *
     from util import dirs
-    # from func.infoPage import infoMessage
     import util.frozen as frozen
     from util.report import MyReport
-    # from inf.print import Em5822_Print
     from view.AbstractPage import AbstractPage
+    import middleware.database as insertdb
 except ModuleNotFoundError:
     from qt0223.third_party.keyboard.keyboard import KeyBoard
-    # from func.testinfo import MyTestInfo
     from qt0223.view.gui.history import *
     from qt0223.util import dirs
-    # from func.infoPage import infoMessage
     import qt0223.util.frozen as frozen
     from qt0223.util.report import MyReport
-    # from inf.print import Em5822_Print
     from qt0223.view.AbstractPage import AbstractPage
+    import middleware.database as insertdb
 
 page_dict = {'page': 0, 'page_2': 1, 'page_3': 2, 'page_4': 3}
 header_list = ["试剂卡编号", "采样时间",  "病人编号" , "病人姓名"]
@@ -206,20 +202,12 @@ class HistoryPage(Ui_Form, AbstractPage):
             self.current_page += 1
         elif cur_page == 2:
             if self.current_page == 0:
-                # m_title = "错误"
-                # m_title = ""
-                # m_info = "已经是第一页!"
-                # infoMessage(m_info, m_title)
                 info = "已经是第一页!"
                 self.update_info.emit(info)
                 return
             self.current_page -= 1
         elif cur_page == 3:
             if self.current_page == self.total_page - 1:
-                # m_title = "错误"
-                # m_title = ""
-                # m_info = "已经是最后一页!"
-                # infoMessage(m_info, m_title)
                 info = "已经是最后一页!"
                 self.update_info.emit(info)
                 return
@@ -282,41 +270,58 @@ class HistoryPage(Ui_Form, AbstractPage):
         global header_list
         if doctor != '':
             search_mode = 2
-            sql = "SELECT * FROM reagent_copy1 WHERE reagent_type = '%s' AND reagent_time = '%s' AND doctor = '%s';"
+            sql = """
+            SELECT * FROM reagent_copy1 WHERE reagent_type LIKE '%' || ? AND reagent_time = ? AND doctor = ?;
+            """
         elif depart != '':
             search_mode = 3
-            sql = "SELECT * FROM reagent_copy1 WHERE reagent_type = '%s' AND reagent_time = '%s' AND doctor = '%s' AND depart = '%s';"
+            sql = """
+            SELECT * FROM reagent_copy1 WHERE reagent_type LIKE '%' || ? AND reagent_time = ? AND doctor = ? AND depart = ?;
+            """
         else:
             # MySQL语句
-            sql = "SELECT * FROM reagent_copy1 WHERE reagent_type = '%s' AND reagent_time = '%s';"
+            sql = """
+            SELECT * FROM reagent_copy1 WHERE reagent_type LIKE '%' || ? AND reagent_time = ?;
+            """
             search_mode = 1
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName(SQL_PATH)
-        db.open()
+        conn = sqlite3.connect(SQL_PATH)
+        cur = conn.cursor()
         try:
             if search_mode == 1:
                 # 执行SQL语句
-                q = QSqlQuery()
-                q.exec_(sql % (item_type, time))
+                cur.execute(sql, [item_type, time])
+                # insertdb.selectMySql(item_type, time)
             elif search_mode == 2:
                 # 执行SQL语句
-                q = QSqlQuery()
-                q.exec_(sql % (item_type, time, doctor))
+                cur.execute(sql, [item_type, time, doctor])
+                # insertdb.selectMySql(item_type, time, doctor)
             elif search_mode == 3:
                 # 执行SQL语句
-                q = QSqlQuery()
-                q.exec_(sql % (item_type, time, doctor, depart))
-            # print(q.executedQuery())
+                cur.execute(sql, [item_type, time, doctor, depart])
+                # insertdb.selectMySql(item_type, time, doctor, depart)
+            # 提交事务
+            conn.commit()
         except Exception as e:
-            print(e)
+            # print(str(e))
+            # 有异常，回滚事务
+            conn.rollback()
 
         # 设置历史数据图表
+        rows = cur.fetchall()
+        self.row_histable = len(rows)
+        self.column_histable = len(header_list)
+        self.page_size = 5  # 每组最大
+        self.total_page = math.ceil(self.row_histable / self.page_size)
+        self.current_page = -1
+
         self.time_list = []
         self.patient_id_list = []
         self.reagent_id_list = []
         self.patient_name_list = []
         self.reagent_info = []
+
         self.name_list = []
+
 
         """
         按照数据库数据排序，对数据进行处理
@@ -324,36 +329,28 @@ class HistoryPage(Ui_Form, AbstractPage):
         第二行为病人号码
         第五行为试剂卡编号
         """
-        sum = 0
-        while q.next():
-            self.time_list.append(q.value(3) + " " + q.value(9))
-            # print(x[9])
-            self.patient_id_list.append(str(q.value(1)))
-            self.reagent_id_list.append(str(q.value(4)))
-            self.reagent_info.append(q.value(10))
-            self.name_list.append(q.value(11))
-            sum = sum + 1
-
-        self.row_histable = sum
-        self.column_histable = len(header_list)
-        self.page_size = 5  # 每组最大
-        self.total_page = math.ceil(self.row_histable / self.page_size)
-        self.current_page = -1
+        for x in rows:
+            self.time_list.append(x[3] + " " + x[9])
+            self.patient_id_list.append(str(x[1]))
+            self.reagent_id_list.append(str(x[4]))
+            self.reagent_info.append(x[10])
+            self.name_list.append(x[11])
 
         sql = "SELECT * FROM patient_copy1;"
         try:
             # 执行SQL语句
-            q.exec_(sql)
+            cur.execute(sql)
+            # 提交事务
+            conn.commit()
         except Exception as e:
-            print(e)
+            # print(str(e))
+            # 有异常，回滚事务
+            conn.rollback()
 
         self.patien_info_list = []
-        temp = []
-        while q.next():
-            for i in range(20):
-                temp.append(q.value(i))
-            self.patien_info_list.append(temp)
-            temp = []
+        for x in cur.fetchall():
+            self.patien_info_list.append(x)
+
 
         for i in self.patient_id_list:
             for j in self.patien_info_list:
@@ -361,7 +358,9 @@ class HistoryPage(Ui_Form, AbstractPage):
                     self.patient_name_list.append(j[0])
 
         self.setHistoryTable(1)
-        db.close()
+        # 释放内存
+        cur.close()
+        conn.close()
 
     """
     @detail 历史数据图片展示，选中是改变图片
@@ -374,61 +373,70 @@ class HistoryPage(Ui_Form, AbstractPage):
         pic_num = self.reagent_id_list[num]
 
         # MySQL语句
-        sql = "SELECT reagent_photo, reagent_type FROM reagent_copy1 WHERE reagent_id = %s"
-        sql_2 = "SELECT * FROM reagent_copy1 WHERE reagent_id = %s"
-        sql_3 = "SELECT * FROM reagent_copy1 WHERE patient_id = %s"
+        sql = """
+        SELECT reagent_photo, reagent_type FROM reagent_copy1 WHERE reagent_id = ?
+        """
+        sql_2 = """
+        SELECT * FROM reagent_copy1 WHERE reagent_id = ?
+        """
+        sql_3 = """
+        SELECT * FROM reagent_copy1 WHERE patient_id = ?
+        """
 
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName(SQL_PATH)
-        db.open()
+        conn = sqlite3.connect(SQL_PATH)
+        cur = conn.cursor()
         try:
             # 执行SQL语句
-            q = QSqlQuery()
-            q.exec_(sql_2 % (pic_num))
-            while q.next():
-                item_type = q.value(0)
-                patient_id = q.value(1)
-                pic_name = q.value(2)
-                pic_path = q.value(3)
-                code_num = q.value(5)
-                doctor = q.value(6)
-                depart = q.value(7)
-                reagent_matrix = q.value(8)
+            # cursor.execute(sql, [pic_num])
+            cur.execute(sql_2, [pic_num])
+            for i in cur.fetchall():
+                item_type = i[0][4:]
+                patient_id = i[1]
+                pic_name = i[2]
+                pic_path = i[3]
+                reagent_id = i[4]
+                code_num = i[5]
+                doctor = i[6]
+                depart = i[7]
+                reagent_matrix = i[8]
                 row_exetable = reagent_matrix[0]
                 column_exetable = reagent_matrix[2]
                 cur_time = []
                 cur_time.append(pic_path)
-                cur_time.append(q.value(9))
-                reagent_matrix_info = q.value(10)
-                patient_name = q.value(11)
-                patient_age = q.value(12)
-                patient_gender = q.value(13)
-                age = q.value(12)
-                gender = q.value(13)
-                name = q.value(11)
-                points = q.value(14)
+                cur_time.append(i[9])
+                reagent_matrix_info = i[10]
+                patient_name = i[11]
+                patient_age = i[12]
+                patient_gender = i[13]
+                age = i[12]
+                gender = i[13]
+                name = i[11]
+                points = i[14]
                 name_pic = pic_name
-                point_str = q.value(14)
-                gray_aver_str = q.value(15)
-                nature_aver_str = q.value(16)
+                point_str = i[14]
+                gray_aver_str = i[15]
+                nature_aver_str = i[16]
                 data_json = dict(patient_id=patient_id, patient_name=patient_name,
                                  patient_age=patient_age, patient_gender=patient_gender,
-                                 item_type=item_type, pic_name=pic_name,
+                                 item_type=item_type, pic_name=pic_name, reagent_id=reagent_id,
                                  time=cur_time, doctor=doctor,
                                  depart=depart, age=age,
                                  gender=gender, name=name,
                                  matrix=reagent_matrix, code_num=code_num,
                                  pic_path=pic_path, name_pic=name_pic,
                                  row_exetable=row_exetable, column_exetable=column_exetable,
-                                 reagent_matrix_info=reagent_matrix_info,point_str=point_str,
-                                 gray_aver_str=gray_aver_str,nature_aver_str=nature_aver_str)
+                                 reagent_matrix_info=reagent_matrix_info, point_str=point_str,
+                                 gray_aver_str=gray_aver_str, nature_aver_str=nature_aver_str)
                 info_msg = 202
                 self.update_json.emit(dict(info=info_msg, data=data_json))
+            # 提交事务
+            conn.commit()
         except Exception as e:
             print(e)
-
+            conn.rollback()
         # 释放内存
-        db.close()
+        cur.close()
+        conn.close()
 
     def setAllergenCb(self):
         # 指定要读取的路径

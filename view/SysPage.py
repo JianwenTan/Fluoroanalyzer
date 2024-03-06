@@ -37,7 +37,7 @@ class SysPage(Ui_Form, AbstractPage):
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        # self.ui.btnSet.setText("   软件更新")
+        self.ui.btnSet.setText("   软件更新")
         self.setBtnIcon()
 
     """
@@ -104,7 +104,7 @@ class SysPage(Ui_Form, AbstractPage):
     """
     @Slot()
     def on_btnSet_clicked(self):
-        page_msg = 'SetPage'
+        page_msg = 'UpdatePage'
         self.next_page.emit(page_msg)
 
     """

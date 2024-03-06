@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 import os
 import time
-from PySide2.QtSql import QSqlQuery, QSqlDatabase
+import sqlite3
 try:
     import util.frozen as frozen
     from controller.AbstractThread import AbstractThread
@@ -76,26 +76,27 @@ class UploadThread(AbstractThread):
         return reagent_info_list, points_list, gray_aver_list
 
     def insertMysql(self, id_list, status_list, reagent_info_list, points_list, gray_aver_list):
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName(SQL_PATH)
-        db.open()
-        # 执行SQL语句
+        db = sqlite3.connect(SQL_PATH)
+        cursor = db.cursor()
+
         for i, j in zip(id_list, range(len(id_list))):
             if status_list[j] == 0:
                 break
             # MySQL语句
-            sql = "UPDATE reagent_copy1 SET reagent_matrix_info = '%s' , gray_aver = '%s', points = '%s' " \
-                  "WHERE reagent_photo = '%s'"
+            sql = 'UPDATE reagent_copy1 SET reagent_matrix_info = %s , gray_aver = %s, points = %s ' \
+                  'WHERE reagent_photo = %s'
             # print(sql)  # 查看SQL语句是否正确
             try:
-                q = QSqlQuery()
-                q.exec_(sql % (reagent_info_list[j], gray_aver_list[j], points_list[j], i)) # 执行sql语句
+                cursor.execute(sql, [reagent_info_list[j], gray_aver_list[j], points_list[j], i])  # 执行sql语句
+
+                db.commit()  # COMMIT命令用于把事务所做的修改保存到数据库
                 print('新增' + str(j + 1) + "数据")
-                q.clear()
             except Exception as e:
                 print(e)
+                db.rollback()  # 发生错误时回滚
                 print("数据添加失败")
 
+        cursor.close()  # 关闭游标
         db.close()  # 关闭数据库连接
         time.sleep(0.5)
         self.deleteFile()
