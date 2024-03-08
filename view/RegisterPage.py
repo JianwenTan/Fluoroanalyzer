@@ -20,8 +20,7 @@ except ModuleNotFoundError:
 class RegisterPage(Ui_Form, AbstractPage):
     def __init__(self):
         """
-        构造函数
-        初始化注册界面信息，同时创建记录异常的信息
+        用户注册界面
         """
         super().__init__()
         self.ui = Ui_Form()
@@ -30,7 +29,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         self.controller = RegisterController()
         self.controller.update_json.connect(self.getControllerInfo)
 
-    def InitUI(self) -> None:
+    def InitUI(self):
         """
         设置界面相关信息
         Returns:
@@ -51,7 +50,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         self.setFocusWidget()
         self.installEvent()
 
-    def installEvent(self) -> None:
+    def installEvent(self):
         """
         安装事件监听
         Returns:
@@ -60,7 +59,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.installEventFilter(self)
 
-    def setFocusWidget(self) -> None:
+    def setFocusWidget(self):
         """
         设置组件点击焦点
         Returns:
@@ -70,7 +69,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.setFocusPolicy(Qt.ClickFocus)
 
-    def eventFilter(self, obj, event) -> bool:
+    def eventFilter(self, obj, event):
         """
         槽函数
         事件过滤
@@ -91,7 +90,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         else:
             return False
 
-    def getKeyBoardText(self, msg) -> None:
+    def getKeyBoardText(self, msg):
         """
         槽函数
         获取键盘的文本信息
@@ -104,7 +103,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         self.focusWidget().setText(msg)
         self.focusWidget().clearFocus()
 
-    def setKeyBoard(self, obj) -> None:
+    def setKeyBoard(self, obj):
         """
         槽函数
         设置可以键盘弹出的组件
@@ -127,7 +126,7 @@ class RegisterPage(Ui_Form, AbstractPage):
             self.keyboardtext.nameLabel.setText("再次输入")
         self.keyboardtext.showWindow()
 
-    def getControllerInfo(self, msg) -> None:
+    def getControllerInfo(self, msg):
         """
         获取controller的信息
         Args:
@@ -149,7 +148,7 @@ class RegisterPage(Ui_Form, AbstractPage):
             self.showInfoDialog(info)
         return
 
-    def checkName(self) -> None:
+    def checkName(self):
         """
         输入检测
         检测输入的用户名和密码
@@ -169,7 +168,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         return
 
     @Slot()
-    def on_btnReturn_clicked(self) -> None:
+    def on_btnReturn_clicked(self):
         """
         槽函数
         返回按钮操作
@@ -180,7 +179,7 @@ class RegisterPage(Ui_Form, AbstractPage):
         self.next_page.emit(page_msg)
 
     @Slot()
-    def on_btnConfirm_clicked(self) -> None:
+    def on_btnConfirm_clicked(self):
         """
         槽函数
         确认按钮操作

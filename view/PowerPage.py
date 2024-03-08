@@ -5,47 +5,43 @@
 """
 import os
 import time
-import sys
-import traceback
 try:
     import util.frozen as frozen
     from view.gui.power import *
-    # from func.infoPage import infoMessage
     from view.AbstractPage import AbstractPage
 except ModuleNotFoundError:
     import qt0223.util.frozen as frozen
     from qt0223.view.gui.power import *
-    # from func.infoPage import infoMessage
     from qt0223.view.AbstractPage import AbstractPage
 
-class PowerPage(Ui_Form, AbstractPage):
-    next_page = Signal(str)
-    update_json = Signal(dict)
-    update_log = Signal(str)
 
-    """
-    @detail 初始化加载界面信息，同时创建记录异常的信息
-    @detail 构造函数
-    """
+class PowerPage(Ui_Form, AbstractPage):
     def __init__(self):
+        """
+        电源界面，实现设备关机和用户注销的功能
+        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
-    """
-    @detail 设置界面相关信息
-    """
     def InitUI(self):
+        """
+        设置界面相关信息
+        Returns:
+            None
+        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setBtnIcon()
 
-    """
-    @detail 设置按钮图标
-    """
     def setBtnIcon(self):
+        """
+        设置按钮图标
+        Returns:
+            None
+        """
         shutdown_icon_path = frozen.app_path() + r"/res/icon/shutdown.png"
         pixImg = self.mySetIconSize(shutdown_icon_path)
         self.ui.shutdown_icon_label.setPixmap(pixImg)
@@ -60,10 +56,15 @@ class PowerPage(Ui_Form, AbstractPage):
         self.ui.btnReturn.setIconSize(QSize(32, 32))
         self.ui.btnReturn.setIcon(QIcon(return_icon_path))
 
-    """
-    @detail 设置按钮图标比例
-    """
     def mySetIconSize(self, path):
+        """
+        设置按钮图标比例
+        Args:
+            path: 图标的路径
+
+        Returns:
+            QPixmap: 设置好图标的QPixmap类实例
+        """
         img = QImage(path)  # 创建图片实例
         mgnWidth = 50
         mgnHeight = 50  # 缩放宽高尺寸
@@ -72,30 +73,36 @@ class PowerPage(Ui_Form, AbstractPage):
             img.scaled(size, Qt.IgnoreAspectRatio))  # 修改图片实例大小并从QImage实例中生成QPixmap实例以备放入QLabel控件中
         return pixImg
 
-    """
-    @detail 返回按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnReturn_clicked(self):
+        """
+        槽函数
+        返回到菜单界面
+        Returns:
+            None
+        """
         page_msg = 'HomePage'
         self.next_page.emit(page_msg)
 
-    """
-    @detail 注销按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnLogout_clicked(self):
+        """
+        槽函数
+        注销当前用户，调转到登录界面
+        Returns:
+            None
+        """
         page_msg = 'LoginPage'
         self.next_page.emit(page_msg)
 
-    """
-    @detail 关机按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnShutdown_clicked(self):
+        """
+        槽函数
+        设备关机按钮
+        Returns:
+            None
+        """
         # m_title = "提示"
         # m_title = ""
         # m_info = "请关闭电源！"

@@ -4,11 +4,12 @@
 @Time：2024/2/28 20:09
 """
 from PySide2.QtCore import QThread, Signal
-import sys
-import traceback
-import time
 import subprocess
 import os
+try:
+    from controller.AbstractThread import AbstractThread
+except ModuleNotFoundError:
+    from qt0223.controller.AbstractThread import AbstractThread
 
 time_to_sleep = 2
 trylock_time = -1
@@ -16,46 +17,29 @@ failed_code = 404
 succeed_code = 202
 
 
-class WifiThread(QThread):
+class WifiThread(AbstractThread):
     update_json = Signal(int)
-    update_log = Signal(str)
 
-    """
-    @detail 初始化线程，同时创建记录异常的信息
-    @detail 构造函数
-    """
     def __init__(self, wifiSSID, wifiPwd, parent=None):
-        super().__init__(parent)
-        sys.excepthook = self.HandleException
+        """
+        初始化线程
+        构造函数
+        Args:
+            wifiSSID: wifi名
+            wifiPwd: wifi密码
+            parent: 父类
+        """
+        super().__init__()
         self.wifiSSID = wifiSSID
         self.wifiPwd = wifiPwd
 
-    """
-    @detail 捕获及输出异常类
-    @param excType: 异常类型
-    @param excValue: 异常对象
-    @param tb: 异常的trace back
-    """
-    def HandleException(self, excType, excValue, tb):
-        sys.__excepthook__(excType, excValue, tb)
-        err_msg = ''.join(traceback.format_exception(excType, excValue, tb))
-        self.update_log.emit(err_msg)
-
-    """
-    @detail 发送异常信息
-    @detail 在正常抛出异常时使用
-    @detail 未使用
-    """
-    def sendException(self):
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        err_msg = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
-        self.update_log.emit(err_msg)
-
-    """
-    @detail 线程运行函数
-    @detail 进行摄像头的检测
-    """
     def run(self):
+        """
+        线程运行函数
+        进行摄像头的检测
+        Returns:
+            None
+        """
         try:
             print("wifi connecting")
             self.connectWifi(self.wifiSSID, self.wifiPwd)
@@ -63,6 +47,15 @@ class WifiThread(QThread):
             self.sendException()
 
     def connectWifi(self, wifiSSID, wifiPwd):
+        """
+        进行wifi的连接
+        Args:
+            wifiSSID: wifi名
+            wifiPwd: wifi密码
+
+        Returns:
+            None
+        """
         try:
             if len(wifiPwd) != 0:
                 cmd_wifi = 'echo %s | sudo nmcli dev wifi connect %s password %s' % (

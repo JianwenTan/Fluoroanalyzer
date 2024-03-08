@@ -23,7 +23,7 @@ class MyProbe(AbstractThread):
         """
         super().__init__()
 
-    def run(self) -> None:
+    def run(self):
         """
         线程运行函数
         进行系统存储的检测
@@ -32,6 +32,7 @@ class MyProbe(AbstractThread):
         """
         try:
             memorystr = QStorageInfo().root()
+            # clear the memory storage last time record
             memorystr.refresh()
             mem_total = memorystr.bytesTotal() / (1024 * 1024 * 1024)
             mem_avail = memorystr.bytesAvailable() / (1024 * 1024 * 1024)

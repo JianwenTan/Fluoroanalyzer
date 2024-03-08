@@ -3,20 +3,19 @@
 @Author：mysondrink@163.com
 @Time：2024/2/27 16:14
 """
-import sys
-import traceback
 from PySide2.QtCore import QThread, Signal
 import pandas as pd
 import numpy as np
 import os
 import time
-import sqlite3
 try:
     import util.frozen as frozen
     from controller.AbstractThread import AbstractThread
+    import middleware.database as insertdb
 except:
     import qt0223.util.frozen as frozen
     from qt0223.controller.AbstractThread import AbstractThread
+    import qt0223.middleware.database as insertdb
 
 
 time_to_sleep = 2
@@ -27,16 +26,24 @@ SQL_PATH = frozen.app_path() + r'/res/db/orangepi-pi.db'
 
 
 class UploadThread(AbstractThread):
-    update_json = Signal()
     finished = Signal()
-    update_log = Signal()
-
 
     def __init__(self, file_path='./res/new_data.xlsx'):
+        """
+        构造函数
+        初始化线程，调用父类方法进行日志记录
+        Args:
+            file_path: 上传文件的路径
+        """
         super().__init__()
         self.file_path = file_path
 
     def run(self):
+        """
+        读取文件，将文件中的数据分离处理
+        Returns:
+            None
+        """
         csv_data = []
         id_data = []
         reagent_data = []
@@ -60,6 +67,16 @@ class UploadThread(AbstractThread):
         #  reagent_matrix, name, gender, age, reagent_matrix_info]
 
     def filterReagentData(self, data):
+        """
+        过滤过敏原数据
+        Args:
+            data: 需要过滤的过敏原数据
+
+        Returns:
+            reagent_info_list: 过敏原数据
+            points_list: 定位点数据
+            gray_aver_list: 像素点数据
+        """
         reagent_info_list = []
         points_list = []
         gray_aver_list = []
@@ -76,32 +93,30 @@ class UploadThread(AbstractThread):
         return reagent_info_list, points_list, gray_aver_list
 
     def insertMysql(self, id_list, status_list, reagent_info_list, points_list, gray_aver_list):
-        db = sqlite3.connect(SQL_PATH)
-        cursor = db.cursor()
+        """
+        进行数据更新
+        根据照片名进行数据的更新
+        Args:
+            id_list: 照片名
+            status_list: status状态list
+            reagent_info_list: 过敏原数据
+            points_list: 定位点数据
+            gray_aver_list: 像素点数据
 
-        for i, j in zip(id_list, range(len(id_list))):
-            if status_list[j] == 0:
-                break
-            # MySQL语句
-            sql = 'UPDATE reagent_copy1 SET reagent_matrix_info = %s , gray_aver = %s, points = %s ' \
-                  'WHERE reagent_photo = %s'
-            # print(sql)  # 查看SQL语句是否正确
-            try:
-                cursor.execute(sql, [reagent_info_list[j], gray_aver_list[j], points_list[j], i])  # 执行sql语句
-
-                db.commit()  # COMMIT命令用于把事务所做的修改保存到数据库
-                print('新增' + str(j + 1) + "数据")
-            except Exception as e:
-                print(e)
-                db.rollback()  # 发生错误时回滚
-                print("数据添加失败")
-
-        cursor.close()  # 关闭游标
-        db.close()  # 关闭数据库连接
+        Returns:
+            None
+        """
+        sum = insertdb.insertMySql(id_list, status_list, reagent_info_list, points_list, gray_aver_list)
+        print('新增' + str(sum) + "数据")
         time.sleep(0.5)
         self.deleteFile()
         self.finished.emit()
 
     def deleteFile(self):
+        """
+        数据更新完后，删除更新文件
+        Returns:
+            None
+        """
         os.remove(self.file_path)
 

@@ -3,16 +3,12 @@
 @Author：mysondrink@163.com
 @Time：2024/1/11 11:03
 """
-import sys
-import traceback
 try:
     import util.frozen as frozen
-    # from func.infoPage import infoMessage
     from view.gui.set import *
     from view.AbstractPage import AbstractPage
 except ModuleNotFoundError:
     import qt0223.util.frozen as frozen
-    # from func.infoPage import infoMessage
     from qt0223.view.gui.set import *
     from qt0223.view.AbstractPage import AbstractPage
 

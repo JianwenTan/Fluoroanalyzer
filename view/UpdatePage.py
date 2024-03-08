@@ -18,33 +18,32 @@ except ModuleNotFoundError:
 
 
 class UpdatePage(Ui_Form, AbstractPage):
-    next_page = Signal(str)
-    update_json = Signal(dict)
-    update_log = Signal(str)
-
-    """
-    @detail 初始化加载界面信息，同时创建记录异常的信息
-    @detail 构造函数
-    """
     def __init__(self):
+        """
+        软件更新界面，实现软件更新和软件重启
+        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
-    """
-    @detail 设置界面相关信息
-    """
     def InitUI(self):
+        """
+        设置界面相关信息
+        Returns:
+            None
+        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setBtnIcon()
 
-    """
-    @detail 设置按钮图标
-    """
     def setBtnIcon(self):
+        """
+        设置按钮图标
+        Returns:
+            None
+        """
         confirm_icon_path = frozen.app_path() + r"/res/icon/confirm.png"
         self.ui.btnConfirm.setIconSize(QSize(32, 32))
         self.ui.btnConfirm.setIcon(QIcon(confirm_icon_path))
@@ -59,6 +58,14 @@ class UpdatePage(Ui_Form, AbstractPage):
         self.ui.restart_icon_label.setAlignment(Qt.AlignCenter)
 
     def updateInfo(self, msg):
+        """
+        获取软件更新线程的信息，进行结果的判断
+        Args:
+            msg: 线程返回信息
+
+        Returns:
+            None
+        """
         src_path = "/mnt/mydev/update.zip"
         identifier = "0xc009d7d1"
         save_path = '/home/orangepi/Desktop/qt0922/update.zip'
@@ -74,17 +81,25 @@ class UpdatePage(Ui_Form, AbstractPage):
             info = "更新失败！"
         self.showInfoDialog(info)
 
-    """
-    @detail 返回按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnReturn_clicked(self):
+        """
+        槽函数
+        返回到系统设置界面
+        Returns:
+            None
+        """
         page_msg = 'SysPage'
         self.next_page.emit(page_msg)
 
     @Slot()
     def on_btnConfirm_clicked(self):
+        """
+        槽函数
+        开启线程进行软件更新
+        Returns:
+            None
+        """
         info = "更新中。。。"
         dialog = ProcessDialog()
         dialog.setInfo(info)
@@ -98,6 +113,12 @@ class UpdatePage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnRestart_clicked(self):
+        """
+        槽函数
+        软件重新启动
+        Returns:
+            None
+        """
         import os
         import sys
         app = QApplication.instance()

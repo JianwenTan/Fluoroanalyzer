@@ -4,9 +4,6 @@
 @Time：2024/1/15 17:16
 """
 import time
-
-from PySide2.QtCore import QThread, Signal, QDateTime
-import datetime
 import grpc
 try:
     import util.frozen as frozen
@@ -22,7 +19,6 @@ except ModuleNotFoundError:
     from qt0223.api.helloworld.v1 import helloworld_pb2, helloworld_pb2_grpc
 
 
-
 TIME_TO_SLEEP = 2
 TRYLOCK_TIME = -1
 FAILED_CODE = 404
@@ -30,29 +26,21 @@ SUCCEED_CODE = 202
 
 
 class MyPicThread(AbstractThread):
-    # update_fail = Signal()
-    # update_success = Signal()
-    # finished = Signal(str)
-
-    """
-    @detail 初始化线程，同时创建记录异常的信息
-    @detail 构造函数
-    """
-
     def __init__(self):
+        """
+        初始化线程
+        构造函数
+        """
         super().__init__()
-        # self.gray_aver = []
         self.judge_flag = True
-        # self.nature_aver = []
-        # self.gray_aver_str = []
-        # self.nature_aver_str = []
-
-    """
-    @detail 线程运行函数
-    @detail 进行图片的获取和图片pixel的获取
-    """
 
     def run(self):
+        """
+        线程运行函数
+        进行图片的获取和图片pixel的获取
+        Returns:
+            None
+        """
         item_type = "检测组合" + self.item_type
         try:
             print("Will try to imgprocess...")
@@ -80,15 +68,13 @@ class MyPicThread(AbstractThread):
             )
             self.sendException()
 
-    """
-    @detail 获取图片pixel信息
-    """
-
-    # def getGrayAver(self):
-    #     return self.judge_flag, self.gray_aver, self.nature_aver, self.gray_aver_str, self.nature_aver_str
-
-    # def getGrayAver(self):
-    #     return self.judge_flag
-
     def setType(self, item_type):
+        """
+        设置需要检测的试剂卡型号
+        Args:
+            item_type: 试剂卡型号
+
+        Returns:
+            None
+        """
         self.item_type = item_type

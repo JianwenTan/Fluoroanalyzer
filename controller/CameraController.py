@@ -1,5 +1,5 @@
 """
-@Description：摄像头管理类
+@Description：摄像头检测控制类
 @Author：mysondrink@163.com
 @Time：2024/1/9 10:32
 """
@@ -40,6 +40,7 @@ class CheckCameraThread(AbstractThread):
             status_msg = 1
             self.update_json.emit(dict(info=info_msg, code=code_msg, status=status_msg))
             time.sleep(TIME_TO_SLEEP)
+            # check the camera is True or False
             Main = img_main()
             if Main.imgLed_init() and Main.imgCamera_init():
                 info_msg = "摄像头检测成功！"

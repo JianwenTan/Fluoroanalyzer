@@ -12,14 +12,22 @@ except ModuleNotFoundError:
     from qt0223.view.AbstractWidget import AbstractWidget
     from qt0223.view.AbstractDialog import AbsctractDialog
 
+
 class ProcessDialog(AbsctractDialog):
+    """
+    进程显示对话框
+    """
     def __init__(self):
         super().__init__()
 
     def mouseDoubleClickEvent(self, msg):
         pass
 
+
 class ErrorDialog(AbsctractDialog):
+    """
+    系统错误对话框
+    """
     def __init__(self):
         super().__init__()
 
@@ -54,7 +62,7 @@ class AbstractPage(AbstractWidget):
             img.scaled(size, Qt.IgnoreAspectRatio))  # 修改图片实例大小并从QImage实例中生成QPixmap实例以备放入QLabel控件中
         return pixImg
 
-    def showInfoDialog(self, msg) -> None:
+    def showInfoDialog(self, msg):
         """
         显示弹窗
         Args:
@@ -71,7 +79,7 @@ class AbstractPage(AbstractWidget):
         dialog.setTimeClose()
         dialog.show()
 
-    def showErrorDialog(self) -> None:
+    def showErrorDialog(self):
         """
         显示系统错误弹窗
         Returns:

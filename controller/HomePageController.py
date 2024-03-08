@@ -29,7 +29,7 @@ class HomePageController(AbstractController):
         """
         super().__del__()
 
-    def startProbeMem(self) -> None:
+    def startProbeMem(self):
         """
         开始存储探测
         Returns:
@@ -40,7 +40,7 @@ class HomePageController(AbstractController):
         self.myprobe.finished.connect(lambda: self.myprobe.deleteLater())
         self.myprobe.start()
 
-    def memWarning(self, msg) -> None:
+    def memWarning(self, msg):
         """
         存储满后警告
         Args:

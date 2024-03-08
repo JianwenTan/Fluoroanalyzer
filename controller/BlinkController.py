@@ -3,7 +3,6 @@
 @Author：mysondrink@163.com
 @Time：2024/1/9 10:08
 """
-from PySide2.QtCore import Signal, QThread
 from PySide2.QtNetwork import QNetworkInterface, QAbstractSocket
 try:
     from controller.AbstractThread import AbstractThread
@@ -26,7 +25,7 @@ class CheckBlinkThread(AbstractThread):
         """
         super().__init__()
 
-    def run(self) -> None:
+    def run(self):
         """
         线程运行函数
         进行wifi的检测

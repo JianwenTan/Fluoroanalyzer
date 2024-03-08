@@ -31,7 +31,7 @@ class CheckDataBaseThread(AbstractThread):
         """
         super().__init__()
 
-    def run(self) -> None:
+    def run(self):
         """
         线程运行函数
         进行数据库的检测
@@ -44,6 +44,7 @@ class CheckDataBaseThread(AbstractThread):
             status_msg = 1
             self.update_json.emit(dict(info=info_msg, code=code_msg, status=status_msg))
             connection = True
+            # check the db file is exist True of False
             if os.path.exists(SQL_PATH):
                 # qmutex.tryLock(trylock_time)
                 time.sleep(TIME_TO_SLEEP)

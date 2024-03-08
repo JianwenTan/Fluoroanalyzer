@@ -107,7 +107,6 @@ class DataPage(Ui_Form, AbstractPage):
             None
         """
         # print(msg['info'])
-        # self.writeFile(msg['data'])
         print("datapage id: ", id(self))
         flag = 0
         pic_para = 1
@@ -145,100 +144,24 @@ class DataPage(Ui_Form, AbstractPage):
 
         self.ui.rightLabel.setText(self.test_time)
         self.ui.leftLabel.setText(self.test_time)
-        """
-        self.pic_para = 1
-        if self.info == 201:
-            self.point_list = self.data['point_str']
-            gray_row = self.data['gray_row']
-            gray_column = self.data['gray_column']
-            gray_aver = self.data['gray_aver'][1:]
-            for i in range(self.row_exetable + int(self.row_exetable / 2)):
-                if i % 3 != 0:
-                    for j in range(self.column_exetable):
-                        if i - flag < gray_row and j < gray_column:
-                            # item = QStandardItem(str(gray_aver[i - flag][j]))
-                            # pix_num = int(gray_aver[i - flag][j])
-                            pix_num = int(float(gray_aver[i - flag][j]) * self.pic_para)
-                            # pix_num = random.randint(15428, 16428)
-                            item = QStandardItem(str(pix_num))
-                        else:
-                            item = QStandardItem(str(0))
-                        item.setTextAlignment(Qt.AlignCenter)
-                        self.pix_table_model.setItem(i, j, item)
-                else:
-                    # num = i % 3
-                    for j in range(0, self.column_exetable):
-                        if j < gray_column:
-                            # item = QStandardItem(reagent_matrix_info[num][j])
-                            item = QStandardItem(reagent_matrix_info[flag][j])
-                        else:
-                            item = QStandardItem(str(0))
-                        item.setTextAlignment(Qt.AlignCenter)
-                        self.pix_table_model.setItem(i, j, item)
-                    flag += 1
 
-            self.insertMysql(name_pic, cur_time)  # 图片数据信息存入数据库
-        elif self.info == 202:
-            self.allergy_info = reagent_matrix_info
-            point_str = self.data['point_str']
-            self.showDataView(point_str + ',' + reagent_matrix_info)
-        """
         self.allergy_info = reagent_matrix_info
         point_str = self.data['point_str']
         self.showDataView(point_str + ',' + reagent_matrix_info)
         # creating a report display
         self.setTableWidget(self.data['item_type'], self.allergy_info, self.data['nature_aver_str'])
 
-    def insertMysql(self, name_pic, cur_time) -> None:
+    def setTableWidget(self, item_type, reagent_info, nature_aver_str):
         """
-        弃用
-        连接数据库，写入图片信息
+        设置报告单显示
         Args:
-            name_pic: 保存图片的图片名
-            cur_time: 测试事件
+            item_type: 试剂型号
+            reagent_info: 过敏原信息
+            nature_aver_str: 过敏原中文信息
 
         Returns:
             None
         """
-        reagent_matrix_info = str(self.readPixtable())
-        point_str = self.data['point_str']
-        self.showDataView(point_str + "," + reagent_matrix_info)
-        self.allergy_info = reagent_matrix_info
-        patient_id = self.data['patient_id']
-
-        patient_name = self.data['patient_name']
-        patient_age = self.data['patient_age']
-        patient_gender = self.data['patient_gender']
-        item_type = self.data['item_type']
-        pic_name = name_pic
-        doctor = self.data['doctor']
-        depart = self.data['depart']
-        age = self.data['age']
-        name = self.data['name']
-        matrix = self.data['matrix']
-        code_num = self.data['code_num']
-        points = self.data['point_str']
-        gray_aver = self.data['gray_aver_str']
-        nature_aver = self.data['nature_aver_str']
-        try:
-            data_1 = [
-                    patient_name,
-                    patient_id,
-                    patient_age,
-                    patient_gender
-                ]
-            data_2 = [
-                    item_type, patient_id, pic_name, cur_time[0],
-                    code_num, doctor, depart, matrix, cur_time[1],
-                    reagent_matrix_info, name, age, patient_gender,
-                    points, gray_aver, nature_aver
-                ]
-            # 提交事务
-            insertdb.insertMySql(data_1, data_2)
-        except Exception as e:
-            print(e)
-
-    def setTableWidget(self, item_type, reagent_info, nature_aver_str):
         v = QVBoxLayout()
         text = MyReport().gethtml(item_type, reagent_info, nature_aver_str)
         self.myreport = QTextEdit()
@@ -253,22 +176,7 @@ class DataPage(Ui_Form, AbstractPage):
         v.addWidget(self.myreport)
         self.ui.tableWidget.setLayout(v)
 
-    def readPixtable(self) -> str:
-        """
-        弃用
-        读取表格内容，同时以str形式保存到数据库
-        Returns:
-            str
-        """
-        reagent_matrix_info = []
-        for i in range(self.row_exetable + int(self.row_exetable / 2)):
-            for j in range(self.column_exetable):
-                index = self.pix_table_model.index(i, j)
-                data = self.pix_table_model.data(index)
-                reagent_matrix_info.append(str(data))
-        return ",".join(reagent_matrix_info)
-
-    def getUSBInfo(self, msg) -> None:
+    def getUSBInfo(self, msg):
         """
         U盘提示信息
         Args:
@@ -290,21 +198,15 @@ class DataPage(Ui_Form, AbstractPage):
             info = "图片读取失败或未找到图片！"
             self.showInfoDialog(info)
 
-    """
-    @detail 读取下传文件
-    @detail 测试代码
-    """
-
-    def writeFile(self, msg):
-        # file_path = os.path.join(r'/', "example.txt")
-        with open("./example.txt", "w") as f:
-            f.write(str(msg))
-
-    """
-    @detail 数据展示
-    """
-
     def showDataView(self, data):
+        """
+        定位点数据展示
+        Args:
+            data: 过敏原信息
+
+        Returns:
+            None
+        """
         title_list = ["定位点", "", "", "", "定位点"]
         data_copy = re.split(r",", data)
         data_copy = title_list + data_copy
@@ -318,13 +220,14 @@ class DataPage(Ui_Form, AbstractPage):
                 self.pix_table_model_copy.setItem(i, j, item)
         return
 
-    """
-    @detail 打印按钮操作
-    @detail 槽函数
-    """
-
     @Slot()
     def on_btnPrint_clicked(self):
+        """
+        槽函数
+        打印按钮操作
+        Returns:
+            None
+        """
         info = "打印中。。。"
         dialog = ProcessDialog()
         dialog.setInfo(info)
@@ -354,13 +257,14 @@ class DataPage(Ui_Form, AbstractPage):
             info = "输出表格失败!"
             self.update_info.emit(info)
 
-    """
-    @detail 下载按钮操作
-    @detail 槽函数
-    """
-
     @Slot()
     def on_btnDownload_clicked(self):
+        """
+        槽函数
+        下载按钮操作
+        Returns:
+            None
+        """
         print("Download")
         name = self.data['name_pic']
         path = self.data['pic_path']
@@ -381,41 +285,46 @@ class DataPage(Ui_Form, AbstractPage):
         info = "下载中..."
         self.showInfoDialog(info)
 
-    """
-    @detail 数据按钮操作
-    @detail 槽函数
-    """
-
     @Slot()
     def on_btnData_clicked(self):
+        """
+        槽函数
+        数据按钮操作，跳转到数据展示页
+        Returns:
+            None
+        """
         # self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget.setCurrentIndex(3)
 
-    """
-    @detail 图片按钮操作
-    @detail 槽函数
-    """
-
     @Slot()
     def on_btnPic_clicked(self):
+        """
+        弃用
+        槽函数
+        图片按钮操作，跳转到图片页
+        Returns:
+            None
+        """
         self.ui.stackedWidget.setCurrentIndex(0)
-
-    """
-    @detail 报告单按钮操作
-    @detail 槽函数
-    """
 
     @Slot()
     def on_btnReport_clicked(self):
+        """
+        槽函数
+        报告单按钮操作，跳转到报告单页面
+        Returns:
+            None
+        """
         self.ui.stackedWidget.setCurrentIndex(2)
-
-    """
-    @detail 返回按钮操作
-    @detail 槽函数
-    """
 
     @Slot()
     def on_btnReturn_clicked(self):
+        """
+        槽函数
+        返回按钮操作，跳转到上一页
+        Returns:
+            None
+        """
         if self.info == 201:
             page_msg = 'TestPage'
             self.next_page.emit(page_msg)

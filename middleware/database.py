@@ -3,24 +3,24 @@
 @Author：mysondrink@163.com
 @Time：2024/2/28 17:33
 """
-from PySide2.QtSql import QSqlQuery, QSqlDatabase
 import sqlite3
 try:
     import util.frozen as frozen
 except ModuleNotFoundError:
     import qt0223.util.frozen as frozen
 
-
+FAILED_CODE = 404
+SUCCEED_CODE = 202
 SQL_PATH = frozen.app_path() + r'/res/db/orangepi-pi.db'
 
 INSERT_PATIENT_SQL = """
-    insert into patient_copy1(name, patient_id, age, gender) 
+    insert into patient_copy1(name, patient_id, age, gender)
                         values (?, ?, ?, ?)
     """
 
 INSERT_IMG_SQL = """
     INSERT INTO reagent_copy1(
-        reagent_type, reagent_photo, gray_aver, nature_aver) 
+        reagent_type, reagent_photo, gray_aver, nature_aver)
         VALUES (?, ?, ?, ?)
     """
 
@@ -33,35 +33,78 @@ UPDATE_SQL = """
     WHERE reagent_photo = ?
     """
 
-SET_SQL = """
+SET_ID_SQL = """
     UPDATE reagent_copy1 SET id = reagent_id WHERE reagent_photo = ?
     """
 
-SQL_1 = """
+SELECT_ALL_REAGENT_SQL = """
     SELECT * FROM reagent_copy1 WHERE reagent_photo = ?
     """
+
+SELECT_ID_ALL_REAGENT_SQL = """
+    SELECT * FROM reagent_copy1 WHERE reagent_id = ?
+    """
+
+UPLOAD_SQL = """
+    UPDATE reagent_copy1 
+    SET reagent_matrix_info = ? , gray_aver = ?, points = ? 
+    WHERE reagent_photo = ?
+    """
+
+SEARCH_REAGENT_ID = """
+    SELECT reagent_id FROM reagent_copy1 WHERE reagent_photo = ?
+    """
+
+SEARCH_ALL_USER = """
+    SELECT * FROM user_table
+    """
+
+INSERT_USER_INFO = """
+    INSERT IGNORE INTO user_table(user_name, user_code) VALUES (?, ?)
+    """
+
 
 def insertMySql(*args):
     conn = sqlite3.connect(SQL_PATH)
     cur = conn.cursor()
     try:
         if len(args) == 1:
+            # inserting test allergen info
             print("insert img")
             data = args[0]
             cur.execute(INSERT_IMG_SQL, list(data.values()))
             conn.commit()
         elif len(args) == 2:
-            print("insert info")
+            # inserting patient and reagent info
+            print("insert and update and set info")
             info = args[0]
             data = args[1]
             cur.execute(INSERT_PATIENT_SQL, list(info.values()))
             cur.execute(UPDATE_SQL, list(data.values()))
-            cur.execute(SET_SQL, [data['reagent_photo']])
+            cur.execute(SET_ID_SQL, [data['reagent_photo']])
             conn.commit()
+        elif len(args) == 5:
+            # uploading data from excel
+            print("update info")
+            id_list = args[0]
+            status_list = args[1]
+            reagent_info_list = args[2]
+            points_list = args[3]
+            gray_aver_list = args[4]
+            for i, j in zip(id_list, range(len(id_list))):
+                if status_list[j] == 0:
+                    break
+                # MySQL syntax
+                # print(sql)  # check SQL syntax
+                cur.execute(UPLOAD_SQL, [reagent_info_list[j], gray_aver_list[j], points_list[j], i])  # execute SQL syntax
+                conn.commit()  # commit func using save change to database
+            return j + 1
     except Exception as e:
+        conn.rollback()
         print(e)
     cur.close()
     conn.close()
+
 
 def selectMySql(*args):
     conn = sqlite3.connect(SQL_PATH)
@@ -70,7 +113,7 @@ def selectMySql(*args):
         if len(args) == 1:
             data = args[0]
             try:
-                cur.execute(SQL_1, [data])
+                cur.execute(SELECT_ALL_REAGENT_SQL, [data])
                 for i in cur.fetchall():
                     gray_aver_sql = i[15]
                 conn.commit()
@@ -82,7 +125,6 @@ def selectMySql(*args):
             return gray_aver_sql
         elif len(args) == 2:
             print("select2")
-
     except Exception as e:
         print(e)
         conn.rollback()
@@ -90,13 +132,13 @@ def selectMySql(*args):
     conn.close()
 
 
-def changePhoto(name):
+def changePhoto(id_reagent):
     # MySQL语句
     conn = sqlite3.connect(SQL_PATH)
     cur = conn.cursor()
     try:
         # 执行SQL语句
-        cur.execute(SQL_1, [name])
+        cur.execute(SELECT_ID_ALL_REAGENT_SQL, [id_reagent])
         for i in cur.fetchall():
             item_type = i[0][4:]
             patient_id = i[1]
@@ -142,3 +184,142 @@ def changePhoto(name):
     conn.close()
     return data_json
 
+
+def searchId(_name):
+    conn = sqlite3.connect(SQL_PATH)
+    cur = conn.cursor()
+    try:
+        # 提交事务
+        cur.execute(SEARCH_REAGENT_ID, [_name])
+        conn.commit()
+    except Exception as e:
+        print(str(e))
+        # 有异常，回滚事务
+        conn.rollback()
+    _id, *rest = cur.fetchall()[0]
+    cur.close()
+    conn.close()
+    return _id
+
+
+def totalPage(*args):
+    """
+    获取查询总页数
+    Args:
+        *args: 查询的参数
+
+    Returns:
+        total: 查询总页数
+    """
+    conn = sqlite3.connect(SQL_PATH)
+    cur = conn.cursor()
+    try:
+        # 提交事务
+        cur.execute(args[0], [*args[1:]])
+        conn.commit()
+    except Exception as e:
+        # print(str(e))
+        # 有异常，回滚事务
+        conn.rollback()
+    total = len(cur.fetchall())
+    cur.close()
+    conn.close()
+    return total
+
+
+def getSQLiteInfo(*args):
+    conn = sqlite3.connect(SQL_PATH)
+    cur = conn.cursor()
+    try:
+        # 提交事务
+        cur.execute(args[0], [*args[1:]])
+        conn.commit()
+    except Exception as e:
+        # print(str(e))
+        # 有异常，回滚事务
+        conn.rollback()
+
+    time_list = []
+    patient_id_list = []
+    reagent_id_list = []
+    name_list = []
+    """
+    按照数据库数据排序，对数据进行处理
+    获取第二行为病人号码
+    获取第四行和第十行为采样事件
+    获取第五行为试剂卡编号
+    获取第十二行为病人姓名
+    """
+    for x in cur.fetchall():
+        patient_id_list.append(str(x[1]))
+        time_list.append(x[3] + " " + x[9])
+        reagent_id_list.append(str(x[4]))
+        name_list.append(x[11])
+
+    # 释放内存
+    cur.close()
+    conn.close()
+
+    return patient_id_list, time_list, reagent_id_list, name_list
+
+
+def setUserDict():
+    """
+    用户字典生成
+    Returns:
+        None
+    """
+    connection = sqlite3.connect(SQL_PATH)
+    cursor = connection.cursor()
+    try:
+        # 执行SQL语句
+        cursor.execute(SEARCH_ALL_USER)
+        # 提交事务
+        connection.commit()
+    except Exception as e:
+        # print(str(e))
+        # 有异常，回滚事务
+        connection.rollback()
+    user_name = []
+    user_code = []
+
+    for x in cursor.fetchall():
+        user_name.append(x[0])
+        user_code.append(x[1])
+
+    user_dict = dict(zip(user_name, user_code))
+
+    # 释放内存
+    cursor.close()
+    connection.close()
+    return user_dict
+
+
+def insertUser(username, usercode):
+    """
+    注册用户写入数据库
+    Args:
+        username: 用户名
+        usercode: 密码
+
+    Returns:
+        None
+    """
+    user_name = username
+    user_code = usercode
+    connection = sqlite3.connect(SQL_PATH)
+    cursor = connection.cursor()
+    try:
+        # 执行SQL语句
+        cursor.execute(INSERT_USER_INFO, [user_name, user_code])
+        # 提交事务
+        connection.commit()
+    except Exception as e:
+        # print(str(e))
+        # 有异常，回滚事务
+        connection.rollback()
+        return FAILED_CODE
+    # 释放内存
+    cursor.close()
+    connection.close()
+    return SUCCEED_CODE

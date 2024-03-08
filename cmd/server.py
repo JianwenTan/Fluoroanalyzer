@@ -32,15 +32,43 @@ except ModuleNotFoundError:
 
 class Greeter(helloworld_pb2_grpc.GreeterServicer):
     def SayHello(self, request, context):
+        """
+        测试代码
+        Args:
+            request:
+            context:
+
+        Returns:
+
+        """
         return helloworld_pb2.HelloReply(message="Hello, %s!" % request.name)
 
     def SayHelloAgain(self, request, context):
+        """
+        测试代码
+        Args:
+            request:
+            context:
+
+        Returns:
+
+        """
         return helloworld_pb2.HelloReplyAgain(message=f"Hello again, {request.name}!", code=202)
 
 
 class Updater(update_pb2_grpc.UpdaterServicer):
     def UpdateSoftware(self, request, context):
-        print(request.name)
+        """
+        进行软件升级
+        返回升级后的结果，成功或失败
+        Args:
+            request: 来自客户端的请求，request定义的格式在protobuf
+            context: 上下文内容
+
+        Returns:
+            Reply: grpc生成的reply，定义的格式在protobuf
+        """
+        # print(request.name)
         MY_ZIP = frozen.app_path() + r'/update.zip'
         try:
             # creating a template directory to unzip file
@@ -63,7 +91,17 @@ class Updater(update_pb2_grpc.UpdaterServicer):
 
 class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
     def ImgProcess(self, request, context):
-        print(request.name)
+        """
+        根据试剂卡格式type，进行图像处理，同时保存内容到数据库
+        返回处理后的结果，成功或失败
+        Args:
+            request: 来自客户端的请求，request定义的格式在protobuf
+            context: 上下文内容
+
+        Returns:
+            Reply: grpc生成的reply，定义的格式在protobuf
+        """
+        # print(request.name)
         pic_path = datetime.datetime.now().strftime("%Y-%m-%d")
         time_now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         path_cache = frozen.app_path() + r'/pic_code/img/img_cache/'
@@ -88,7 +126,10 @@ class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
             if judge_flag is not True:
                 raise Exception
             w, h = nature_aver.shape
-            print(w, h)
+            # print(w, h)
+
+            # convert list result to str result
+            # to insert database
             antibody_test_results = []
             antibody_test_points = []
             nature_aver_list = []
@@ -99,6 +140,7 @@ class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
                     gray_aver_list.append(str(gray_aver[i][j]))
             nature_aver_str = ",".join(nature_aver_list)
             gray_aver_str = ",".join(gray_aver_list)
+
             # insert database
             data = dict(
                 reagent_type=item_type,
@@ -118,13 +160,16 @@ class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
 
 def serve():
     port = "50051"
-    # 实例化server
+
+    # instantiation server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    # 注册逻辑到server中
+
+    # register instance to server
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
     update_pb2_grpc.add_UpdaterServicer_to_server(Updater(), server)
     imgprocess_pb2_grpc.add_ImgProcesserServicer_to_server(ImgProcesser(), server)
-    # 启动server
+
+    # activate server
     server.add_insecure_port("[::]:" + port)
     server.start()
     print("Server started, listening on " + port)

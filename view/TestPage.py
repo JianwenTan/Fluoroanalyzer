@@ -25,17 +25,16 @@ SQL_PATH = frozen.app_path() + r'/res/db/orangepi-pi.db'
 
 
 class TestPage(Ui_Form, AbstractPage):
-    """
-    @detail 初始化加载界面信息，同时创建记录异常的信息
-    @detail 构造函数
-    """
     def __init__(self):
+        """
+        荧光检疫界面
+        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
-    def InitUI(self) -> None:
+    def InitUI(self):
         """
         设置界面相关信息
         Returns:
@@ -63,7 +62,7 @@ class TestPage(Ui_Form, AbstractPage):
         self.setFocusWidget()
         self.installEvent()
         self.setAllergenCb()
-        self.setReagentCb()
+        # self.setReagentCb()
         self.mytest()
         self.setBtnIcon()
         self.ui.tableView.horizontalHeader().close()
@@ -73,7 +72,7 @@ class TestPage(Ui_Form, AbstractPage):
 
         # self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-    def setBtnIcon(self) -> None:
+    def setBtnIcon(self):
         """
         设置按钮图标
         Returns:
@@ -103,7 +102,7 @@ class TestPage(Ui_Form, AbstractPage):
         self.ui.btnReturn.setIconSize(QSize(32, 32))
         self.ui.btnReturn.setIcon(QIcon(return_icon_path))
 
-    def mytest(self) -> None:
+    def mytest(self):
         """
         测试信息
         Returns:
@@ -115,7 +114,7 @@ class TestPage(Ui_Form, AbstractPage):
         self.ui.ageLine.setText(name_list[1])
         self.ui.departCb.setText(name_list[2])
 
-    def installEvent(self) -> None:
+    def installEvent(self):
         """
         安装事件监听
         Returns:
@@ -124,7 +123,7 @@ class TestPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.installEventFilter(self)
 
-    def setFocusWidget(self) -> None:
+    def setFocusWidget(self):
         """
         设置组件点击焦点
         Returns:
@@ -134,7 +133,7 @@ class TestPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.setFocusPolicy(Qt.ClickFocus)
 
-    def eventFilter(self, obj, event) -> bool:
+    def eventFilter(self, obj, event):
         """
         槽函数
         事件过滤
@@ -155,7 +154,7 @@ class TestPage(Ui_Form, AbstractPage):
         else:
             return False
 
-    def setKeyBoard(self, obj) -> None:
+    def setKeyBoard(self, obj):
         """
         槽函数
         设置可以键盘弹出的组件
@@ -182,7 +181,7 @@ class TestPage(Ui_Form, AbstractPage):
             self.keyboardtext.nameLabel.setText("送检医生")
         self.keyboardtext.showWindow()
 
-    def getKeyBoardText(self, msg) -> None:
+    def getKeyBoardText(self, msg):
         """
         槽函数
         获取键盘的文本信息
@@ -195,7 +194,7 @@ class TestPage(Ui_Form, AbstractPage):
         self.focusWidget().setText(msg)
         self.focusWidget().clearFocus()
 
-    def resetBtn(self) -> None:
+    def resetBtn(self):
         """
         重置按钮信息，当发生页面跳转时触发
         Returns:
@@ -208,7 +207,7 @@ class TestPage(Ui_Form, AbstractPage):
         self.ui.btnConfirm.show()
         self.ui.btnReturn.setGeometry(410, 10, 380, 80)
 
-    def setAllergenTableView(self) -> None:
+    def setAllergenTableView(self):
         """
         设置表格过敏原
         Returns:
@@ -245,7 +244,7 @@ class TestPage(Ui_Form, AbstractPage):
                     item.setTextAlignment(Qt.AlignCenter)
                     allergen_table_model.setItem(i, j, item)
 
-    def setAllergenCb(self) -> None:
+    def setAllergenCb(self):
         """
         添加检测组合
         Returns:
@@ -263,10 +262,11 @@ class TestPage(Ui_Form, AbstractPage):
             self.ui.modeBox_1.addItem(filename)
             self.ui.modeBox_1.setCurrentIndex(-1)
 
-    def setTableView(self) -> None:
+    def setTableView(self):
         """
         设置表格内容，主要是过敏原信息
-        表格为旧表格，弃用，但不能删除代码
+        表格为旧表格
+        弃用
         Returns:
             None
         """
@@ -317,7 +317,7 @@ class TestPage(Ui_Form, AbstractPage):
                     # content_cb.setStyleSheet(self.cb_style_sheet)
                     self.ui.exeTable.setIndexWidget(self.pix_table_model.index(i, j), content_cb)
 
-    def takePicture(self, msg) -> None:
+    def takePicture(self, msg):
         """
         实现图片提取功能，获取得到的img和pixel信息
         Args:
@@ -363,6 +363,7 @@ class TestPage(Ui_Form, AbstractPage):
             self.update_info.emit(m_info)
             return
 
+        """
         img_final = cv.imread(frozen.app_path() + r'/pic_code/img/img_out/img_final.jpeg')
         img_origin = cv.imread(frozen.app_path() + r'/pic_code/img/img_out/img_0ori.jpeg')
         # img_show_final = cv.imread(frozen.app_path() + r'/pic_code/img/img_out/img_show_final.jpeg')
@@ -383,6 +384,7 @@ class TestPage(Ui_Form, AbstractPage):
         dirs.makedir(save_path)
         flag_bool = cv.imwrite(save_path, img_show_final)
         
+        """
 
         page_msg = 'DataPage'
         self.next_page.emit(page_msg)
@@ -425,9 +427,9 @@ class TestPage(Ui_Form, AbstractPage):
             else:
                 point_str = point_str + ',' + i
         point_str = point_str[1:]
+
         # creating empty list to merge
         result = []
-
         # looping merge two list, 5 elements from list1, 10 elements from list2
         for i in range(len(gray_list[5:]) // 10):
             sublist1 = reagent_matrix_info[i * 5:i * 5 + 5]
@@ -467,34 +469,19 @@ class TestPage(Ui_Form, AbstractPage):
 
         # insert to sqlite database
         insertdb.insertMySql(info_json, data_json)
-        data_json = insertdb.changePhoto(time_now)
+        # get reagent id to select photo
+        reagent_id = insertdb.searchId(time_now)
+        data_json = insertdb.changePhoto(reagent_id)
         info_msg = 201
         self.update_json.emit(dict(info=info_msg, data=data_json))
         return
 
-    def updateSql(self):
-        matrix = self.readPixtableNum(2)
-        connection = pymysql.connect(host="127.0.0.1", user="root", password="password", port=3306, database="test",
-                                     charset='utf8')
-        # MySQL语句
-        sql = 'UPDATE matrix_table SET reagent_matrix_info = %s WHERE reagent_type= %s AND reagent_matrix = %s'
-
-        # 获取标记
-        cursor = connection.cursor()
-        try:
-            # 执行SQL语句
-            cursor.execute(sql, [matrix, name, item_type])
-            # 提交事务
-            connection.commit()
-        except Exception as e:
-            # print(str(e))
-            # 有异常，回滚事务
-            connection.rollback()
-        # 释放内存
-        cursor.close()
-        connection.close()
-
     def readPixtableNum(self):
+        """
+        读取表格内容，同时以list形式保存到数据库
+        Returns:
+            list: 读取到表格的过敏原信息
+        """
         reagent_matrix_info = []
         for i in range(self.row_exetable):
             row_list = []
@@ -511,10 +498,10 @@ class TestPage(Ui_Form, AbstractPage):
             result.append([a + b for a, b in zip(reagent_matrix_info[i], reagent_matrix_info[i + 1])])
         return result
 
-    def setReagentCb(self) -> None:
+    def setReagentCb(self):
         """
         读取数据库，获取试剂卡规格的信息
-        弃用, 不能删除
+        弃用
         Returns:
             None
         """
@@ -540,7 +527,7 @@ class TestPage(Ui_Form, AbstractPage):
         conn.close()
 
     @Slot()
-    def on_btnReturn_clicked(self) -> None:
+    def on_btnReturn_clicked(self):
         """
         槽函数
         返回按钮操作
@@ -561,7 +548,7 @@ class TestPage(Ui_Form, AbstractPage):
             self.ui.stackedWidget.setCurrentIndex(0)
 
     @Slot()
-    def on_btnConfirm_clicked(self) -> None:
+    def on_btnConfirm_clicked(self):
         """
         槽函数
         确认按钮操作
@@ -577,14 +564,16 @@ class TestPage(Ui_Form, AbstractPage):
             info = "请填写完信息！"
             self.showInfoDialog(info)
             return
-        self.setTableView()
+        # self.setTableView()
+        self.row_exetable = 8
+        self.column_exetable = 5
         self.ui.stackedWidget.setCurrentIndex(3)
         self.ui.btnExe.show()
         self.ui.btnConfirm.hide()
         self.setAllergenTableView()
 
     @Slot()
-    def on_btnExe_clicked(self) -> None:
+    def on_btnExe_clicked(self):
         """
         槽函数
         检测按钮操作

@@ -47,6 +47,7 @@ class HomePage(Ui_Form, AbstractPage):
         self.setBtnIcon()
         self.controller = HomePageController()
         self.controller.update_json.connect(self.memWarning)
+        self.ui.btnSet.setText("  仪器设置")
 
     def setBtnIcon(self) -> None:
         """
@@ -151,6 +152,12 @@ class HomePage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnSet_clicked(self) -> None:
+        """
+        槽函数
+        仪器设置页面跳转
+        Returns:
+            None
+        """
         page_msg = 'RegPage'
         self.next_page.emit(page_msg)
 

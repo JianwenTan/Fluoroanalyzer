@@ -21,7 +21,7 @@ try:
     from view.SysPage import SysPage
     from view.WifiPage import WifiPage
     from view.ClearPage import ClearPage
-    from view.SetPage import SetPage
+    # from view.SetPage import SetPage
     from view.AboutPage import AboutPage
     from view.RegPage import RegPage
     from view.UpdatePage import UpdatePage
@@ -42,7 +42,7 @@ except ModuleNotFoundError:
     from qt0223.view.SysPage import SysPage
     from qt0223.view.WifiPage import WifiPage
     from qt0223.view.ClearPage import ClearPage
-    from qt0223.view.SetPage import SetPage
+    # from qt0223.view.SetPage import SetPage
     from qt0223.view.AboutPage import AboutPage
     from qt0223.view.RegPage import RegPage
     from qt0223.view.UpdatePage import UpdatePage
@@ -57,7 +57,7 @@ class LoadPage(Ui_Form, AbstractPage):
     """
     这部分controller只实现线程检测
     """
-    def __init__(self) -> object:
+    def __init__(self):
         """
         构造函数
         初始化类变量
@@ -82,7 +82,7 @@ class LoadPage(Ui_Form, AbstractPage):
         # self.p_ptr = None   # 定义QStackedLayout头指针
         # self.timer = QTime()
 
-    def InitUI(self) -> None:
+    def InitUI(self):
         """
         设置界面相关信息
         Returns:
@@ -98,7 +98,7 @@ class LoadPage(Ui_Form, AbstractPage):
         self.ui.btnRetry.hide()
         # self.ui.textEdit.setEnabled(False)
         # self.setWindowFlags(Qt.WindowStaysOnTopHint)
-        # self.setWindowFlags(Qt.FramelessWindowHint)  # 去掉窗口状态栏
+        self.setWindowFlags(Qt.FramelessWindowHint)  # 去掉窗口状态栏
         self.setAttribute(Qt.WA_TranslucentBackground)  # 窗口背景透明
         self.setFocusPolicy(Qt.NoFocus)
         self.ui.centerframe.setFrameStyle(QFrame.NoFrame)
@@ -129,11 +129,16 @@ class LoadPage(Ui_Form, AbstractPage):
         self.controller.startThread()
 
     def setTitle(self):
+        """
+        设置软件名显示
+        Returns:
+            None
+        """
         settings = QSettings(CONFIG_FILE, QSettings.IniFormat)
         settings.setIniCodec("UTF-8")
         self.ui.title_label.setText("  " + settings.value("MACHINE/machine_name"))
 
-    def blinkAssess(self, msg) -> None:
+    def blinkAssess(self, msg):
         """
         检测设备wifi连接情况，同时设置图标进行显示
         Args:
@@ -161,7 +166,7 @@ class LoadPage(Ui_Form, AbstractPage):
             delay_time = 500
             self.blink_timer.start(delay_time)
 
-    def blinkIcon(self) -> None:
+    def blinkIcon(self):
         """
         图标闪烁提示
         Returns:
@@ -174,7 +179,7 @@ class LoadPage(Ui_Form, AbstractPage):
             self.blink_flag = True
             self.ui.wifi_label.show()
 
-    def mySetIconSize(self, path) -> None:
+    def mySetIconSize(self, path):
         """
         设置按钮图标比例
         Args:
@@ -192,7 +197,7 @@ class LoadPage(Ui_Form, AbstractPage):
         return pixImg
 
     # @Slot()
-    def setInfoLabel(self, msg) -> None:
+    def setInfoLabel(self, msg):
         """
         槽函数
         获取相机、数据库、串口的线程检测反馈信息
@@ -209,7 +214,7 @@ class LoadPage(Ui_Form, AbstractPage):
             self.sendException()
             print(e)
 
-    def showPage(self) -> None:
+    def showPage(self):
         """
         槽函数
         设置主界面中子界面的显示位置，同时显示登录界面
@@ -240,6 +245,15 @@ class LoadPage(Ui_Form, AbstractPage):
             self.next_page.emit("LoginPage")
 
     def changePage(self, msg):
+        """
+        槽函数
+        界面跳转
+        Args:
+            msg: 需要跳转的下一个界面
+
+        Returns:
+            None
+        """
         try:
             # 设置栈为2
             num = len(self.list_widget)
@@ -291,7 +305,7 @@ class LoadPage(Ui_Form, AbstractPage):
             # m_info = "系统错误！"
             # infoMessage(m_info, m_title, 300)
 
-    def statusShowTime(self) -> None:
+    def statusShowTime(self):
         """
         设置时间显示，间隔为1秒
         Returns:
@@ -302,7 +316,7 @@ class LoadPage(Ui_Form, AbstractPage):
 
         self.timer.start(1000)
 
-    def showCurrentTime(self) -> None:
+    def showCurrentTime(self):
         """
         设置显示时间格式
         Returns:
@@ -312,7 +326,7 @@ class LoadPage(Ui_Form, AbstractPage):
         time_display = cur_time.toString('yyyy-MM-dd hh:mm:ss dddd')
         self.ui.time_label.setText(time_display)
 
-    def retryThread(self) -> None:
+    def retryThread(self):
         """
         槽函数
         显示重试标签、按钮
@@ -322,7 +336,7 @@ class LoadPage(Ui_Form, AbstractPage):
         self.ui.retry_icon_label.show()
         self.ui.btnRetry.show()
 
-    def getJsonData(self, msg) -> None:
+    def getJsonData(self, msg):
         """
         弃用
         槽函数
@@ -351,7 +365,7 @@ class LoadPage(Ui_Form, AbstractPage):
     #     self.showInfoDialog(dict(info=info, code=code))
 
     @Slot()
-    def on_btnRetry_clicked(self) -> None:
+    def on_btnRetry_clicked(self):
         """
         槽函数
         重试按钮，重新进行相机、数据库、串口的线程检测
@@ -362,11 +376,4 @@ class LoadPage(Ui_Form, AbstractPage):
         # self.flag_num = FLAG_NUM
         self.ui.retry_icon_label.hide()
         self.ui.btnRetry.hide()
-        # for num in range(len(self.thread_id)):
-        #     stat = self.thread_id[num].isFinished()
-        #     if self.thread_id[num].isFinished() is False:
-        #         continue
-        #     self.thread_id[num].deleteLater()
-        # self.thread_id.clear()
-        # self.startThread()
         self.controller.startThread()

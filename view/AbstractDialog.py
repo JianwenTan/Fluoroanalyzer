@@ -30,6 +30,11 @@ class AbsctractDialog(AbstractWidget):
         print(f"delete dialog{self.__class__.__name__}")
 
     def InitUI(self):
+        """
+        界面初始化
+        Returns:
+            None
+        """
         self.resize(800, 480)
         # self.setWindowOpacity(0.5)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -76,6 +81,14 @@ class AbsctractDialog(AbstractWidget):
         self.setLayout(layout)
 
     def paintEvent(self, event):
+        """
+        绘制对话框的底色
+        Args:
+            event: 事件
+
+        Returns:
+            None
+        """
         # QPainter p(this);
         # // 边框黑色不透明 （因为设置了窗体无边框，这行代码可能没有效果）
         # p.setPen(QColor(0, 255, 0, 255));
@@ -94,40 +107,89 @@ class AbsctractDialog(AbstractWidget):
     #     self.close()
 
     def setTimeClose(self):
+        """
+        设置定时器关闭
+        Returns:
+            None
+        """
         timer = QTimer()
         timer.timeout.connect(lambda: self.close())
         timer.timeout.connect(lambda: timer.stop())
         timer.start(2500)
 
     def show(self):
+        """
+        打开对话框
+        Returns:
+            None
+        """
         super().show()
         self.raise_()
 
     def hideDialog(self):
+        """
+        隐藏对话框
+        Returns:
+            None
+        """
         self.hide()
 
     def closeDialog(self):
+        """
+        关闭对话框
+        Returns:
+            None
+        """
         self.close()
 
     def hideProgress(self):
+        """
+        隐藏进度条
+        Returns:
+            None
+        """
         self.progress.hide()
 
     def showProgress(self):
+        """
+        展示进度条
+        Returns:
+            None
+        """
         self.progress.show()
 
     def hideBtn(self):
+        """
+        隐藏重启按钮
+        Returns:
+            None
+        """
         self.buttonRestart.hide()
 
     def showButton(self):
+        """
+        显示重启按钮
+        Returns:
+            None
+        """
         self.buttonRestart.show()
 
     def setInfo(self, msg):
+        """
+        设置提示框内容
+        Args:
+            msg: 提示框内容
+
+        Returns:
+            None
+        """
         self.label.setText(msg)
 
     def restart_real_live(self):
-        """ 进程控制实现自动重启
+        """
+        进程控制实现自动重启
 
-        :return:
+        :return: None
         """
         import os
         import sys

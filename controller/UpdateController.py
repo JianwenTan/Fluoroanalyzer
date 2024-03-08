@@ -4,10 +4,6 @@
 @Time：2024/3/4 13:46
 """
 import time
-import os
-import zipfile
-import shutil
-import tempfile
 import grpc
 try:
     from api.update.v1 import update_pb2, update_pb2_grpc
@@ -28,7 +24,7 @@ MY_DIR = frozen.app_path()
 
 
 class MyUpdateThread(AbstractThread):
-    def __init__(self) -> object:
+    def __init__(self):
         """
         构造函数
         初始化线程，调用父类方法进行日志记录
@@ -37,7 +33,7 @@ class MyUpdateThread(AbstractThread):
         """
         super().__init__()
 
-    def run(self) -> None:
+    def run(self):
         """
         线程运行函数
         进行数据库的检测
@@ -47,6 +43,7 @@ class MyUpdateThread(AbstractThread):
         try:
             # client of update server
             print("Will try to update ...")
+            # request connect to update server
             with grpc.insecure_channel("localhost:50051") as channel:
                 stub = update_pb2_grpc.UpdaterStub(channel)
                 response: update_pb2_grpc.UpdaterStub = stub.UpdateSoftware(

@@ -6,13 +6,11 @@
 try:
     import util.frozen as frozen
     from view.gui.reg import *
-    # from func.infoPage import infoMessage
     from view.AbstractPage import AbstractPage, ProcessDialog
     from third_party.keyboard.keyboard import KeyBoard
 except ModuleNotFoundError:
     import qt0223.util.frozen as frozen
     from qt0223.view.gui.reg import *
-    # from func.infoPage import infoMessage
     from qt0223.view.AbstractPage import AbstractPage, ProcessDialog
     from qt0223.third_party.keyboard.keyboard import KeyBoard
 
@@ -20,24 +18,21 @@ CONFIG_FILE = frozen.app_path() + r"/config/configname.ini"
 
 
 class RegPage(Ui_Form, AbstractPage):
-    next_page = Signal(str)
-    update_json = Signal(dict)
-    update_log = Signal(str)
-
-    """
-    @detail 初始化加载界面信息，同时创建记录异常的信息
-    @detail 构造函数
-    """
     def __init__(self):
+        """
+        仪器设置界面，进行仪器名和型号的命名设置
+        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
-    """
-    @detail 设置界面相关信息
-    """
     def InitUI(self):
+        """
+        设置界面相关信息
+        Returns:
+            None
+        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -50,7 +45,7 @@ class RegPage(Ui_Form, AbstractPage):
         self.ui.modeLine.setText(settings.value("MACHINE/machine_mode"))
         self.ui.serialLine.setText(settings.value("MACHINE/machine_serial"))
 
-    def installEvent(self) -> None:
+    def installEvent(self):
         """
         安装事件监听
         Returns:
@@ -59,7 +54,7 @@ class RegPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.installEventFilter(self)
 
-    def setFocusWidget(self) -> None:
+    def setFocusWidget(self):
         """
         设置组件点击焦点
         Returns:
@@ -69,7 +64,7 @@ class RegPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.setFocusPolicy(Qt.ClickFocus)
 
-    def eventFilter(self, obj, event) -> bool:
+    def eventFilter(self, obj, event):
         """
         槽函数
         事件过滤
@@ -90,7 +85,7 @@ class RegPage(Ui_Form, AbstractPage):
         else:
             return False
 
-    def setKeyBoard(self, obj) -> None:
+    def setKeyBoard(self, obj):
         """
         槽函数
         设置可以键盘弹出的组件
@@ -113,7 +108,7 @@ class RegPage(Ui_Form, AbstractPage):
             self.keyboardtext.nameLabel.setText("仪器批号")
         self.keyboardtext.showWindow()
 
-    def getKeyBoardText(self, msg) -> None:
+    def getKeyBoardText(self, msg):
         """
         槽函数
         获取键盘的文本信息
@@ -126,10 +121,12 @@ class RegPage(Ui_Form, AbstractPage):
         self.focusWidget().setText(msg)
         self.focusWidget().clearFocus()
 
-    """
-    @detail 设置按钮图标
-    """
     def setBtnIcon(self):
+        """
+        设置按钮图标
+        Returns:
+            None
+        """
         confirm_icon_path = frozen.app_path() + r"/res/icon/confirm.png"
         self.ui.btnConfirm.setIconSize(QSize(32, 32))
         self.ui.btnConfirm.setIcon(QIcon(confirm_icon_path))
@@ -138,17 +135,25 @@ class RegPage(Ui_Form, AbstractPage):
         self.ui.btnReturn.setIconSize(QSize(32, 32))
         self.ui.btnReturn.setIcon(QIcon(return_icon_path))
 
-    """
-    @detail 返回按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnReturn_clicked(self):
+        """
+        槽函数
+        返回按钮返回到菜单界面
+        Returns:
+            None
+        """
         page_msg = 'HomePage'
         self.next_page.emit(page_msg)
 
     @Slot()
     def on_btnConfirm_clicked(self):
+        """
+        槽函数
+        确认按钮保存仪器设置
+        Returns:
+            None
+        """
         info = "修改中。。。"
         dialog = ProcessDialog()
         dialog.setInfo(info)

@@ -21,8 +21,8 @@ SUCCEED_CODE = 202
 
 
 class LoadController(AbstractController):
-    update_page = Signal()
-    update_retry = Signal()
+    update_page = Signal()      # page signal to send next page name
+    update_retry = Signal()     # retry signal to send detection
 
     def __init__(self) -> object:
         """
@@ -37,7 +37,7 @@ class LoadController(AbstractController):
         self.thread_id = []
         self.change_timer = None
 
-    def startThread(self) -> None:
+    def startThread(self):
         """
         开启相机、数据库、串口的线程检测
         Returns:
@@ -58,10 +58,11 @@ class LoadController(AbstractController):
             self.thread_list[num].start()
 
     # @Slot()
-    def setInfoLabel(self, msg) -> None:
+    def setInfoLabel(self, msg):
         """
         槽函数
         开启相机、数据库、串口的线程检测
+        创建线程池来同时检测上述线程
         Args:
             msg: 发送来的信号
 
@@ -78,12 +79,12 @@ class LoadController(AbstractController):
                 self.update_retry.emit()
             self._len = self._len + 1
             if self._len % self.thread_len == 0 and self.flag_num == FLAG_NUM:
-                # 创建定时器
+                # create a timer
                 self.change_timer = QTimer()
                 self.change_timer.timeout.connect(lambda: self.update_page.emit())
                 self.change_timer.timeout.connect(lambda: self.change_timer.stop())
-                # 设置定时器延迟时间，单位为毫秒
-                # 延迟2秒跳转
+                # set timer delay time, unit is second
+                # delay time is 2
                 delay_time = 2000
                 self.change_timer.start(delay_time)
         except Exception as e:

@@ -30,7 +30,7 @@ class LoginPage(Ui_Form, AbstractPage):
         self.InitUI()
         # self.setUserDict()
 
-    def InitUI(self) -> None:
+    def InitUI(self):
         """
         设置界面相关信息
         Returns:
@@ -46,7 +46,7 @@ class LoginPage(Ui_Form, AbstractPage):
         self.controller = LoginController()
         self.controller.update_json.connect(self.getControllerInfo)
 
-    def getControllerInfo(self, msg) -> None:
+    def getControllerInfo(self, msg):
         """
         获取controller的信息
         Args:
@@ -64,7 +64,7 @@ class LoginPage(Ui_Form, AbstractPage):
             # self.update_info.emit(info)
             self.update_info.emit(info)
 
-    def mytest(self) -> None:
+    def mytest(self):
         """
         测试账号
         Returns:
@@ -73,7 +73,7 @@ class LoginPage(Ui_Form, AbstractPage):
         self.ui.nameLine.setText("test")
         self.ui.numLine.setText("123456")
 
-    def setBtnIcon(self) -> None:
+    def setBtnIcon(self):
         """
         设置按钮图标
         Returns:
@@ -89,7 +89,7 @@ class LoginPage(Ui_Form, AbstractPage):
         self.ui.register_icon_label.setPixmap(pixImg)
         self.ui.register_icon_label.setAlignment(Qt.AlignCenter)
 
-    def installEvent(self) -> None:
+    def installEvent(self):
         """
         安装事件监听
         Returns:
@@ -98,7 +98,7 @@ class LoginPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.installEventFilter(self)
 
-    def setFocusWidget(self) -> None:
+    def setFocusWidget(self):
         """
         设置组件点击焦点
         Returns:
@@ -108,7 +108,7 @@ class LoginPage(Ui_Form, AbstractPage):
         for item in self.focuswidget:
             item.setFocusPolicy(Qt.ClickFocus)
 
-    def eventFilter(self, obj, event) -> bool:
+    def eventFilter(self, obj, event):
         """
         槽函数
         事件过滤
@@ -129,7 +129,7 @@ class LoginPage(Ui_Form, AbstractPage):
         else:
             return False
 
-    def setKeyBoard(self, obj) -> None:
+    def setKeyBoard(self, obj):
         """
         槽函数
         设置可以键盘弹出的组件
@@ -150,7 +150,7 @@ class LoginPage(Ui_Form, AbstractPage):
             self.keyboardtext.nameLabel.setText("密码")
         self.keyboardtext.showWindow()
 
-    def getKeyBoardText(self, msg) -> None:
+    def getKeyBoardText(self, msg):
         """
         槽函数
         获取键盘的文本信息
@@ -164,7 +164,7 @@ class LoginPage(Ui_Form, AbstractPage):
         self.focusWidget().clearFocus()
 
     @Slot()
-    def on_loginBtn_clicked(self) -> None:
+    def on_loginBtn_clicked(self):
         """
         槽函数
         登录按钮操作，对用户信息进行简单判断
@@ -184,7 +184,7 @@ class LoginPage(Ui_Form, AbstractPage):
         return
 
     @Slot()
-    def on_registerBtn_clicked(self) -> None:
+    def on_registerBtn_clicked(self):
         """
         槽函数
         注册按钮槽函数，跳转到注册界面

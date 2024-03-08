@@ -5,22 +5,16 @@
 """
 import os
 import time
-import sys
-import traceback
 try:
     import util.frozen as frozen
-    # from func.infoPage import infoMessage
     from view.gui.wifi import *
-    # from inf.wifiThread import WifiThread
     from third_party.keyboard.keyboard import KeyBoard
     from util.wifi import wifisearch
     from view.AbstractPage import AbstractPage, ProcessDialog
     from controller.WifiController import WifiThread
 except ModuleNotFoundError:
     import qt0223.util.frozen as frozen
-    # from func.infoPage import infoMessage
     from qt0223.view.gui.wifi import *
-    # from inf.wifiThread import WifiThread
     from qt0223.third_party.keyboard.keyboard import KeyBoard
     from qt0223.util.wifi import wifisearch
     from qt0223.view.AbstractPage import AbstractPage, ProcessDialog
@@ -28,24 +22,21 @@ except ModuleNotFoundError:
 
 
 class WifiPage(Ui_Form, AbstractPage):
-    next_page = Signal(str)
-    update_json = Signal(dict)
-    update_log = Signal(str)
-
-    """
-    @detail 初始化加载界面信息，同时创建记录异常的信息
-    @detail 构造函数
-    """
     def __init__(self):
+        """
+        wifi连接界面
+        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
-    """
-    @detail 设置界面相关信息
-    """
     def InitUI(self):
+        """
+        设置界面相关信息
+        Returns:
+            None
+        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -62,12 +53,16 @@ class WifiPage(Ui_Form, AbstractPage):
         self.installEvent()
         # self.mytest()
 
-    """
-    @detail 获取wifi连接反馈
-    @detail 槽函数
-    @param msg: 信号，返回wifi连接的结果
-    """
     def getWifiMsg(self, msg):
+        """
+        槽函数
+        获取wifi连接反馈
+        Args:
+            msg: 返回wifi连接的结果
+
+        Returns:
+            None
+        """
         if msg == 202:
             # m_title = "确认"
             # m_title = ""
@@ -100,34 +95,44 @@ class WifiPage(Ui_Form, AbstractPage):
             info = "时间同步成功！"
             self.showInfoDialog(info)
 
-    """
-    @detail 测试信息
-    """
     def mytest(self):
+        """
+        测试信息
+        Returns:
+            None
+        """
         self.ui.wifiCb.addItems(["TPLink","TPLink2023"])
 
-    """
-    @detail 安装事件监听
-    """
     def installEvent(self):
+        """
+        安装事件监听
+        Returns:
+            None
+        """
         for item in self.focuswidget:
             item.installEventFilter(self)
 
-    """
-    @detail 设置组件点击焦点
-    """
     def setFocusWidget(self):
+        """
+        设置组件点击焦点
+        Returns:
+            None
+        """
         self.focuswidget = [self.ui.pwdLine]
         for item in self.focuswidget:
             item.setFocusPolicy(Qt.ClickFocus)
 
-    """
-    @detail 事件过滤
-    @detail 槽函数
-    @param obj: 发生事件的组件
-    @param event: 发生的事件
-    """
     def eventFilter(self, obj, event):
+        """
+        槽函数
+        事件过滤
+        Args:
+            obj: 发生事件的组件
+            event: 发生的事件
+
+        Returns:
+            bool: 处理掉事件
+        """
         if obj in self.focuswidget:
             if event.type() == QEvent.Type.FocusIn:
                 # print(obj.setText("hello"))
@@ -138,12 +143,16 @@ class WifiPage(Ui_Form, AbstractPage):
         else:
             return False
 
-    """
-    @detail 设置可以键盘弹出的组件
-    @detail 槽函数
-    @param obj: 键盘弹出的组件
-    """
     def setKeyBoard(self, obj):
+        """
+        槽函数
+        设置可以键盘弹出的组件
+        Args:
+            obj: 键盘弹出的组件
+
+        Returns:
+            None
+        """
         self.keyboardtext = KeyBoard()
         self.keyboardtext.text_msg.connect(self.getKeyBoardText)
         obj_name = obj.objectName()
@@ -153,28 +162,36 @@ class WifiPage(Ui_Form, AbstractPage):
             self.keyboardtext.nameLabel.setText("密码")
         self.keyboardtext.showWindow()
 
-    """
-    @detail 获取键盘的文本信息
-    @detail 槽函数
-    @param msg: 信号，键盘文本信息
-    """
     def getKeyBoardText(self, msg):
+        """
+        槽函数
+        获取键盘的文本信息
+        Args:
+            msg: 信号，键盘文本信息
+
+        Returns:
+            None
+        """
         self.focusWidget().setText(msg)
         self.focusWidget().clearFocus()
 
-    """
-    @detail 设置wifi选择框
-    """
     def setWifiName(self):
+        """
+        设置wifi选择框
+        Returns:
+            None
+        """
         self.wifiName = wifisearch.getwifiname()
         self.ui.wifiCb.addItems(self.wifiName)
 
-    """
-    @detail 确认按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnConfirm_clicked(self):
+        """
+        槽函数
+        进行wifi连接
+        Returns:
+            None
+        """
         try:
             flag = -100
             self.wifiPwd = self.ui.pwdLine.text()
@@ -225,12 +242,14 @@ class WifiPage(Ui_Form, AbstractPage):
             m_info = "wifi连接失败！"
             infoMessage(m_info, m_title, 280)
 
-    """
-    @detail 返回按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnReturn_clicked(self):
+        """
+        槽函数
+        返回系统设置界面
+        Returns:
+            None
+        """
         page_msg = 'SysPage'
         self.next_page.emit(page_msg)
 

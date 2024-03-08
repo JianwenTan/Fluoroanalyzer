@@ -1,9 +1,8 @@
 """
-@Description：串口管理
+@Description：串口检测控制类
 @Author：mysondrink@163.com
 @Time：2024/1/9 10:31
 """
-from PySide2.QtCore import Signal
 import time
 try:
     from controller.AbstractThread import AbstractThread
@@ -26,7 +25,7 @@ class CheckSerialThread(AbstractThread):
         """
         super().__init__()
 
-    def run(self) -> None:
+    def run(self):
         """
         线程运行函数
         进行串口的检测
@@ -40,6 +39,7 @@ class CheckSerialThread(AbstractThread):
             status_msg = 1
             self.update_json.emit(dict(info=info_msg, code=code_msg, status=status_msg))
             time.sleep(TIME_TO_SLEEP)
+            # check serial is True or False
             Main = img_main()
             if Main.natPrint_init():
                 info_msg = "串口检测成功！"

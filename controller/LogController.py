@@ -3,8 +3,7 @@
 @Author：mysondrink@163.com
 @Time：2024/1/8 16:41
 """
-import time
-from PySide2.QtCore import QThread, Signal, Slot
+from PySide2.QtCore import QThread, Signal
 import logging
 import sys
 import traceback
@@ -17,14 +16,11 @@ LOG_FILE = frozen.app_path() + r"/log/reagent.log"
 
 
 class LogThread(QThread):
-    error_info = Signal()
-    """
-    @detail 初始化线程
-    @detail 构造函数
-    """
+    error_info = Signal()       # error signal to send system error
 
-    def __init__(self, parent=None) -> object:
+    def __init__(self, parent=None):
         """
+        初始化线程
         构造函数
         Returns:
             object
@@ -33,7 +29,7 @@ class LogThread(QThread):
         self.logger = None
         self.log_file = LOG_FILE
 
-    def run(self) -> None:
+    def run(self):
         """
         线程运行函数
         进行日志的创建
@@ -41,11 +37,11 @@ class LogThread(QThread):
             None
         """
         try:
-            # 创建一个logger
+            # create an instance logger
             self.logger = logging.getLogger()
             self.logger.setLevel(logging.INFO)  # Log等级总开关  此时是INFO
 
-            # 创建一个handler，用于写入日志文件
+            # create an instance handler to write log file
             # logfile = frozen.app_path() + r'/log/reagent.log'
             fh = logging.FileHandler(self.log_file, mode='a')  # open的打开模式这里可以进行参考
             fh.setLevel(logging.DEBUG)  # 输出到file的log等级的开关
@@ -58,7 +54,7 @@ class LogThread(QThread):
             通过判断logger对象的handlers属性，或者hasHandlers函数，保持同一loggername对应的FileHander唯一
             """
             if not self.logger.handlers:
-                # 将logger添加到handler里面
+                # add logger to handler
                 self.logger.addHandler(fh)
 
             # 日志级别
@@ -73,7 +69,7 @@ class LogThread(QThread):
             err_msg = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
             self.logger.warning(err_msg)
 
-    def getLogMsg(self, msg) -> None:
+    def getLogMsg(self, msg):
         """
         槽函数
         获取线程的日志信息

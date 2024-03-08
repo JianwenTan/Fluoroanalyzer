@@ -3,11 +3,7 @@
 @Author：mysondrink@163.com
 @Time：2024/1/11 10:52
 """
-import os
 import datetime
-import sys
-import traceback
-
 try:
     import util.frozen as frozen
     # from func.infoPage import infoMessage
@@ -29,24 +25,22 @@ except ModuleNotFoundError:
 
 
 class ClearPage(Ui_Form, AbstractPage):
-    next_page = Signal(str)
-    update_json = Signal(dict)
-    update_log = Signal(str)
-
-    """
-    @detail 初始化加载界面信息，同时创建记录异常的信息
-    @detail 构造函数
-    """
     def __init__(self):
+        """
+        构造函数
+        初始化界面信息
+        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
-    """
-    @detail 设置界面相关信息
-    """
     def InitUI(self):
+        """
+        设置界面相关信息
+        Returns:
+            None
+        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -66,10 +60,12 @@ class ClearPage(Ui_Form, AbstractPage):
 
         self.setClearBar()
 
-    """
-    @detail 设置存储条
-    """
     def setClearBar(self):
+        """
+        设置存储条
+        Returns:
+            None
+        """
         memorystr = QStorageInfo().root()
         memorystr.refresh()
         mem_total = memorystr.bytesTotal() / (1024 * 1024 * 1024)
@@ -78,11 +74,16 @@ class ClearPage(Ui_Form, AbstractPage):
         print('mem_progress:', mem_progress)
         self.ui.clearBar.setValue(int(mem_progress))
 
-    """
-    @detail 清理结果处理，同时设置进度条显示
-    @detail 槽函数
-    """
     def getInfo(self, msg):
+        """
+        槽函数
+        清理结果处理，同时设置进度条显示
+        Args:
+            msg: 信号
+
+        Returns:
+            None
+        """
         self.setClearBar()
         # m_title = "确认"
         # m_title = ""
@@ -92,12 +93,14 @@ class ClearPage(Ui_Form, AbstractPage):
         self.showInfoDialog(info)
         return
 
-    """
-    @detail 确认按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnConfirm_clicked(self):
+        """
+        槽函数
+        确认按钮操作
+        Returns:
+            None
+        """
         # pic_path = frozen.app_path() + "/img/"
         # root_list = []
         # dirs_list = []
@@ -144,11 +147,13 @@ class ClearPage(Ui_Form, AbstractPage):
         self.myClearThread.finished.connect(self.getInfo)
         self.myClearThread.start()
 
-    """
-    @detail 返回按钮操作
-    @detail 槽函数
-    """
     @Slot()
     def on_btnReturn_clicked(self):
+        """
+        槽函数
+        返回按钮操作
+        Returns:
+            None
+        """
         page_msg = 'SysPage'
         self.next_page.emit(page_msg)

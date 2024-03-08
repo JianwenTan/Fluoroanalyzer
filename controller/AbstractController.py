@@ -13,12 +13,12 @@ except ModuleNotFoundError:
 
 
 class AbstractController(QObject):
-    update_log = Signal(str)
-    update_json = Signal(dict)
+    update_log = Signal(str)    # log signal to send msg
+    update_json = Signal(dict)  # json signal to send data
 
     def __init__(self):
         """
-        构造函数，初始化日志类
+        抽象控制类
         """
         super().__init__()
         self.log_thread = LogThread()
@@ -32,7 +32,7 @@ class AbstractController(QObject):
         """
         print(f"del object is {self.__class__.__name__}")
 
-    def HandleException(self, excType, excValue, tb) -> None:
+    def HandleException(self, excType, excValue, tb):
         """
         自动捕获和输出异常类
         Args:
@@ -58,7 +58,7 @@ class AbstractController(QObject):
         # m_info = "系统错误！"
         # infoMessage(m_info, m_title, 300)
 
-    def sendException(self) -> None:
+    def sendException(self):
         """
         手动发送异常信息
         Returns:

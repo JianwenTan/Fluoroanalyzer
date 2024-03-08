@@ -14,10 +14,12 @@ import shutil
 try:
     import util.frozen as frozen
     from util import dirs
+    # from controller.AbstractThread import AbstractThread
     from pic_code.img_main import img_main
 except ModuleNotFoundError:
     import qt0223.util.frozen as frozen
     from qt0223.util import dirs
+    # from qt0223.controller.AbstractThread import AbstractThread
     from qt0223.pic_code.img_main import img_main
 
 time_to_sleep = 2
@@ -30,12 +32,17 @@ class CheckUSBThread(QThread):
     update_json = Signal(int)
     update_log = Signal(str)
 
-    """
-    @detail 初始化线程，同时创建记录异常的信息
-    @detail 构造函数
-    """
-
     def __init__(self, name, path, data, allergy, parent=None):
+        """
+        初始化线程
+        构造函数
+        Args:
+            name: 图片名称
+            path: 图片路径
+            data: 图片数据
+            allergy: 试剂卡数据
+            parent: 父类
+        """
         super().__init__(parent)
         sys.excepthook = self.HandleException
         self.name_pic = name
@@ -49,7 +56,6 @@ class CheckUSBThread(QThread):
     @param excValue: 异常对象
     @param tb: 异常的trace back
     """
-
     def HandleException(self, excType, excValue, tb):
         sys.__excepthook__(excType, excValue, tb)
         err_msg = ''.join(traceback.format_exception(excType, excValue, tb))
@@ -60,30 +66,31 @@ class CheckUSBThread(QThread):
     @detail 在正常抛出异常时使用
     @detail 未使用
     """
-
     def sendException(self):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         err_msg = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
         self.update_log.emit(err_msg)
 
-    """
-    @detail u盘下载运行函数
-    @detail 进行u盘下载
-    """
-
     def run(self):
+        """
+        u盘下载运行函数
+        进行u盘下载
+        Returns:
+            None
+        """
         try:
             self.downLoadToUSB()
         except Exception as e:
             self.sendException()
             self.update_json.emit(failed_code)
 
-    """
-    @detail 下载信息到u盘
-    @detail 下载内容包括图片、数据库信息
-    """
-
     def downLoadToUSB(self):
+        """
+        下载信息到u盘
+        下载内容包括图片、数据库信息
+        Returns:
+            None
+        """
         """
         # 指定目标目录
         target_dir = '/media/orangepi/'
@@ -237,6 +244,15 @@ class CheckUSBThread(QThread):
             self.update_json.emit(failed_code)
 
     def split_string(self, obj, sec):
+        """
+        分割字符，将过敏原数据设置为固定形式的二维list
+        Args:
+            obj: 过敏原数据
+            sec: 步长，即二维list的列数
+
+        Returns:
+            result： list，分割好的二维list
+        """
         result = []
         data = [obj[i:i + sec] for i in range(0, len(obj), sec)]
         num_list = [1, 4, 7, 10]
