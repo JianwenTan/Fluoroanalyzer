@@ -1,15 +1,10 @@
-"""
-@Description：抽象控制类
-@Author：mysondrink@163.com
-@Time：2024/1/9 15:49
-"""
 from PySide2.QtCore import QObject, Signal
 import sys
 import traceback
 try:
     from controller.LogController import LogThread
 except ModuleNotFoundError:
-    from qt0223.controller.LogController import LogThread
+    from qt0922.controller.LogController import LogThread
 
 
 class AbstractController(QObject):

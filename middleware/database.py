@@ -1,13 +1,8 @@
-"""
-@Description：数据库增删改查类
-@Author：mysondrink@163.com
-@Time：2024/2/28 17:33
-"""
 import sqlite3
 try:
     import util.frozen as frozen
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
+    import qt0922.util.frozen as frozen
 
 FAILED_CODE = 404
 SUCCEED_CODE = 202
@@ -60,7 +55,7 @@ SEARCH_ALL_USER = """
     """
 
 INSERT_USER_INFO = """
-    INSERT IGNORE INTO user_table(user_name, user_code) VALUES (?, ?)
+    INSERT INTO user_table(user_name, user_code) VALUES (?, ?)
     """
 
 
@@ -133,11 +128,9 @@ def selectMySql(*args):
 
 
 def changePhoto(id_reagent):
-    # MySQL语句
     conn = sqlite3.connect(SQL_PATH)
     cur = conn.cursor()
     try:
-        # 执行SQL语句
         cur.execute(SELECT_ID_ALL_REAGENT_SQL, [id_reagent])
         for i in cur.fetchall():
             item_type = i[0][4:]
@@ -189,12 +182,10 @@ def searchId(_name):
     conn = sqlite3.connect(SQL_PATH)
     cur = conn.cursor()
     try:
-        # 提交事务
         cur.execute(SEARCH_REAGENT_ID, [_name])
         conn.commit()
     except Exception as e:
         print(str(e))
-        # 有异常，回滚事务
         conn.rollback()
     _id, *rest = cur.fetchall()[0]
     cur.close()
@@ -203,14 +194,6 @@ def searchId(_name):
 
 
 def totalPage(*args):
-    """
-    获取查询总页数
-    Args:
-        *args: 查询的参数
-
-    Returns:
-        total: 查询总页数
-    """
     conn = sqlite3.connect(SQL_PATH)
     cur = conn.cursor()
     try:
@@ -231,12 +214,10 @@ def getSQLiteInfo(*args):
     conn = sqlite3.connect(SQL_PATH)
     cur = conn.cursor()
     try:
-        # 提交事务
         cur.execute(args[0], [*args[1:]])
         conn.commit()
     except Exception as e:
         # print(str(e))
-        # 有异常，回滚事务
         conn.rollback()
 
     time_list = []
@@ -244,11 +225,6 @@ def getSQLiteInfo(*args):
     reagent_id_list = []
     name_list = []
     """
-    按照数据库数据排序，对数据进行处理
-    获取第二行为病人号码
-    获取第四行和第十行为采样事件
-    获取第五行为试剂卡编号
-    获取第十二行为病人姓名
     """
     for x in cur.fetchall():
         patient_id_list.append(str(x[1]))
@@ -256,7 +232,6 @@ def getSQLiteInfo(*args):
         reagent_id_list.append(str(x[4]))
         name_list.append(x[11])
 
-    # 释放内存
     cur.close()
     conn.close()
 
@@ -264,21 +239,13 @@ def getSQLiteInfo(*args):
 
 
 def setUserDict():
-    """
-    用户字典生成
-    Returns:
-        None
-    """
     connection = sqlite3.connect(SQL_PATH)
     cursor = connection.cursor()
     try:
-        # 执行SQL语句
         cursor.execute(SEARCH_ALL_USER)
-        # 提交事务
         connection.commit()
     except Exception as e:
         # print(str(e))
-        # 有异常，回滚事务
         connection.rollback()
     user_name = []
     user_code = []
@@ -289,37 +256,23 @@ def setUserDict():
 
     user_dict = dict(zip(user_name, user_code))
 
-    # 释放内存
     cursor.close()
     connection.close()
     return user_dict
 
 
 def insertUser(username, usercode):
-    """
-    注册用户写入数据库
-    Args:
-        username: 用户名
-        usercode: 密码
-
-    Returns:
-        None
-    """
     user_name = username
     user_code = usercode
     connection = sqlite3.connect(SQL_PATH)
     cursor = connection.cursor()
     try:
-        # 执行SQL语句
         cursor.execute(INSERT_USER_INFO, [user_name, user_code])
-        # 提交事务
         connection.commit()
     except Exception as e:
-        # print(str(e))
-        # 有异常，回滚事务
+        print(str(e))
         connection.rollback()
         return FAILED_CODE
-    # 释放内存
     cursor.close()
     connection.close()
     return SUCCEED_CODE

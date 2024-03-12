@@ -1,13 +1,8 @@
-"""
-@Description：存储检测控制类
-@Author：mysondrink@163.com
-@Time：2024/1/15 16:06
-"""
 from PySide2.QtCore import QThread, Signal, QStorageInfo
 try:
     from controller.AbstractThread import AbstractThread
 except ModuleNotFoundError:
-    from qt0223.controller.AbstractThread import AbstractThread
+    from qt0922.controller.AbstractThread import AbstractThread
 
 failed_code = 404
 succeed_code = 202
@@ -17,19 +12,9 @@ class MyProbe(AbstractThread):
     update_progress = Signal(int)
 
     def __init__(self):
-        """
-        构造函数
-        初始化线程，同时创建记录异常的信息
-        """
         super().__init__()
 
     def run(self):
-        """
-        线程运行函数
-        进行系统存储的检测
-        Returns:
-            None
-        """
         try:
             memorystr = QStorageInfo().root()
             # clear the memory storage last time record

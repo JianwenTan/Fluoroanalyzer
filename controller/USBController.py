@@ -1,8 +1,3 @@
-"""
-@Description：数据下载类
-@Author：mysondrink@163.com
-@Time：2024/2/27 16:14
-"""
 from PySide2.QtCore import QThread, Signal, QDateTime
 import sys
 import traceback
@@ -17,10 +12,10 @@ try:
     # from controller.AbstractThread import AbstractThread
     from pic_code.img_main import img_main
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
-    from qt0223.util import dirs
-    # from qt0223.controller.AbstractThread import AbstractThread
-    from qt0223.pic_code.img_main import img_main
+    import qt0922.util.frozen as frozen
+    from qt0922.util import dirs
+    # from qt0922.controller.AbstractThread import AbstractThread
+    from qt0922.pic_code.img_main import img_main
 
 time_to_sleep = 2
 trylock_time = -1
@@ -33,16 +28,6 @@ class CheckUSBThread(QThread):
     update_log = Signal(str)
 
     def __init__(self, name, path, data, allergy, parent=None):
-        """
-        初始化线程
-        构造函数
-        Args:
-            name: 图片名称
-            path: 图片路径
-            data: 图片数据
-            allergy: 试剂卡数据
-            parent: 父类
-        """
         super().__init__(parent)
         sys.excepthook = self.HandleException
         self.name_pic = name
@@ -50,34 +35,17 @@ class CheckUSBThread(QThread):
         self.data = data
         self.allergy_info = allergy
 
-    """
-    @detail 捕获及输出异常类
-    @param excType: 异常类型
-    @param excValue: 异常对象
-    @param tb: 异常的trace back
-    """
     def HandleException(self, excType, excValue, tb):
         sys.__excepthook__(excType, excValue, tb)
         err_msg = ''.join(traceback.format_exception(excType, excValue, tb))
         self.update_log.emit(err_msg)
 
-    """
-    @detail 发送异常信息
-    @detail 在正常抛出异常时使用
-    @detail 未使用
-    """
     def sendException(self):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         err_msg = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
         self.update_log.emit(err_msg)
 
     def run(self):
-        """
-        u盘下载运行函数
-        进行u盘下载
-        Returns:
-            None
-        """
         try:
             self.downLoadToUSB()
         except Exception as e:
@@ -227,7 +195,7 @@ class CheckUSBThread(QThread):
                     # path_usb = save_dir + timenow +".xlsx"
                     # shutil.copy(save_path, path_usb)
                 src_path = '%s/res/test.zip' % frozen.app_path()
-                identifier = "0xc009d7d1"
+                identifier = "0xb7d60506"
                 Main = img_main()
                 if Main.mountMove(img_origin, save_path, identifier) is not True:
                     raise Exception

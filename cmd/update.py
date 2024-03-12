@@ -1,8 +1,3 @@
-"""
-@Description：测试代码
-@Author：mysondrink@163.com
-@Time：2024/3/4 16:20
-"""
 import zipfile
 import os
 import tempfile
@@ -12,7 +7,7 @@ sys.path.append("..")
 try:
     import util.frozen as frozen
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
+    import qt0922.util.frozen as frozen
 
 
 def main():

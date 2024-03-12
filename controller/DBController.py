@@ -1,17 +1,11 @@
-"""
-@Description：数据库管理类
-@Author：mysondrink@163.com
-@Time：2024/1/9 10:32
-"""
 import time
 import os
 try:
     import util.frozen as frozen
     from controller.AbstractThread import AbstractThread
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
-    from qt0223.controller.AbstractThread import AbstractThread
-# from func.infoPage import infoMessage
+    import qt0922.util.frozen as frozen
+    from qt0922.controller.AbstractThread import AbstractThread
 
 TIME_TO_SLEEP = 2
 TRYLOCK_TIME = -1
@@ -23,21 +17,9 @@ SQL_PATH = frozen.app_path() + r'/res/db/orangepi-pi.db'
 
 class CheckDataBaseThread(AbstractThread):
     def __init__(self) -> object:
-        """
-        构造函数
-        初始化线程，调用父类方法进行日志记录
-        Returns:
-            object
-        """
         super().__init__()
 
     def run(self):
-        """
-        线程运行函数
-        进行数据库的检测
-        Returns:
-            None
-        """
         try:
             info_msg = "数据库检测中。。。"
             code_msg = SUCCEED_CODE

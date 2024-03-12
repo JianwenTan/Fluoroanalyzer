@@ -1,8 +1,3 @@
-"""
-@Description：设置文件绝对路径
-@Author：mysondrink@163.com
-@Time：2024/1/8 15:42
-"""
 import sys
 import os
 

@@ -1,15 +1,10 @@
-"""
-@Description：图标闪烁类
-@Author：mysondrink@163.com
-@Time：2024/1/9 10:08
-"""
 from PySide2.QtNetwork import QNetworkInterface, QAbstractSocket
 try:
     from controller.AbstractThread import AbstractThread
     from controller.AbstractController import AbstractController
 except ModuleNotFoundError:
-    from qt0223.controller.AbstractThread import AbstractThread
-    from qt0223.controller.AbstractController import AbstractController
+    from qt0922.controller.AbstractThread import AbstractThread
+    from qt0922.controller.AbstractController import AbstractController
 
 TIME_TO_SLEEP = 2
 TRYLOCK_TIME = -1
@@ -19,19 +14,9 @@ SUCCEED_CODE = 202
 
 class CheckBlinkThread(AbstractThread):
     def __init__(self):
-        """
-        构造函数
-        初始化线程，调用父类方法进行日志记录
-        """
         super().__init__()
 
     def run(self):
-        """
-        线程运行函数
-        进行wifi的检测
-        Returns:
-            None
-        """
         try:
             wifi_interface = "wlan0"
             flag = 1
@@ -52,7 +37,6 @@ class CheckBlinkThread(AbstractThread):
                             break
                 else:
                     flag = 0
-                    break
             if flag == 1:
                 # print("True")
                 info_msg = "connected"

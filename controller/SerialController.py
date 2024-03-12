@@ -1,15 +1,10 @@
-"""
-@Description：串口检测控制类
-@Author：mysondrink@163.com
-@Time：2024/1/9 10:31
-"""
 import time
 try:
     from controller.AbstractThread import AbstractThread
     from pic_code.img_main import img_main
 except ModuleNotFoundError:
-    from qt0223.controller.AbstractThread import AbstractThread
-    from qt0223.pic_code.img_main import img_main
+    from qt0922.controller.AbstractThread import AbstractThread
+    from qt0922.pic_code.img_main import img_main
 
 TIME_TO_SLEEP = 2
 TRYLOCK_TIME = -1
@@ -19,19 +14,9 @@ SUCCEED_CODE = 202
 
 class CheckSerialThread(AbstractThread):
     def __init__(self):
-        """
-        构造函数
-        初始化线程，调用父类方法进行日志记录
-        """
         super().__init__()
 
     def run(self):
-        """
-        线程运行函数
-        进行串口的检测
-        Returns:
-            None
-        """
         # qmutex.tryLock(trylock_time)
         try:
             info_msg = "串口检测中。。。"

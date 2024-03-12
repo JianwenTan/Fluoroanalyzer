@@ -1,8 +1,3 @@
-"""
-@Description：
-@Author：mysondrink@163.com
-@Time：2024/2/26 11:13
-"""
 from concurrent import futures
 import logging
 import sys
@@ -22,12 +17,12 @@ try:
     import middleware.database as insertdb
     import util.frozen as frozen
 except ModuleNotFoundError:
-    from qt0223.api.helloworld.v1 import helloworld_pb2, helloworld_pb2_grpc
-    from qt0223.api.update.v1 import update_pb2, update_pb2_grpc
-    from qt0223.api.imgprocess.v1 import imgprocess_pb2, imgprocess_pb2_grpc
-    import qt0223.util.frozen as frozen
-    from qt0223.pic_code.img_main import img_main
-    import qt0223.middleware.database as insertdb
+    from qt0922.api.helloworld.v1 import helloworld_pb2, helloworld_pb2_grpc
+    from qt0922.api.update.v1 import update_pb2, update_pb2_grpc
+    from qt0922.api.imgprocess.v1 import imgprocess_pb2, imgprocess_pb2_grpc
+    import qt0922.util.frozen as frozen
+    from qt0922.pic_code.img_main import img_main
+    import qt0922.middleware.database as insertdb
 
 
 class Greeter(helloworld_pb2_grpc.GreeterServicer):

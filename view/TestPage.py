@@ -12,13 +12,13 @@ try:
     import util.dirs as dirs
     import middleware.database as insertdb
 except ModuleNotFoundError:
-    from qt0223.view.gui.test import *
-    from qt0223.controller.PicController import MyPicThread
-    from qt0223.third_party.keyboard.keyboard import KeyBoard
-    from qt0223.view.AbstractPage import AbstractPage, ProcessDialog
-    import qt0223.util.frozen as frozen
-    import qt0223.util.dirs as dirs
-    import qt0223.middleware.database as insertdb
+    from qt0922.view.gui.test import *
+    from qt0922.controller.PicController import MyPicThread
+    from qt0922.third_party.keyboard.keyboard import KeyBoard
+    from qt0922.view.AbstractPage import AbstractPage, ProcessDialog
+    import qt0922.util.frozen as frozen
+    import qt0922.util.dirs as dirs
+    import qt0922.middleware.database as insertdb
 
 allergen = [' ', '柳树', '普通豚草', '艾蒿', '屋尘螨']
 SQL_PATH = frozen.app_path() + r'/res/db/orangepi-pi.db'
@@ -35,11 +35,7 @@ class TestPage(Ui_Form, AbstractPage):
         self.InitUI()
 
     def InitUI(self):
-        """
-        设置界面相关信息
-        Returns:
-            None
-        """
+
         self.ui.btnExe.hide()
         self.ui.btnPrint.hide()
         self.ui.btnDownload.hide()
@@ -73,11 +69,7 @@ class TestPage(Ui_Form, AbstractPage):
         # self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     def setBtnIcon(self):
-        """
-        设置按钮图标
-        Returns:
-            None
-        """
+
         confirm_icon_path = frozen.app_path() + r"/res/icon/confirm.png"
         self.ui.btnConfirm.setIconSize(QSize(32, 32))
         self.ui.btnConfirm.setIcon(QIcon(confirm_icon_path))
@@ -103,11 +95,7 @@ class TestPage(Ui_Form, AbstractPage):
         self.ui.btnReturn.setIcon(QIcon(return_icon_path))
 
     def mytest(self):
-        """
-        测试信息
-        Returns:
-            None
-        """
+
         name_list = ["佚名", "00", "检验", "佚名"]
         self.ui.nameLine.setText(name_list[0])
         self.ui.docCb.setText(name_list[3])
@@ -115,35 +103,17 @@ class TestPage(Ui_Form, AbstractPage):
         self.ui.departCb.setText(name_list[2])
 
     def installEvent(self):
-        """
-        安装事件监听
-        Returns:
-            None
-        """
+
         for item in self.focuswidget:
             item.installEventFilter(self)
 
     def setFocusWidget(self):
-        """
-        设置组件点击焦点
-        Returns:
-            None
-        """
+
         self.focuswidget = [self.ui.nameLine, self.ui.paraLine, self.ui.ageLine, self.ui.departCb, self.ui.docCb]
         for item in self.focuswidget:
             item.setFocusPolicy(Qt.ClickFocus)
 
     def eventFilter(self, obj, event):
-        """
-        槽函数
-        事件过滤
-        Args:
-            obj: 发生事件的组件
-            event: 发生的事件
-
-        Returns:
-            None
-        """
         if obj in self.focuswidget:
             if event.type() == QEvent.Type.FocusIn:
                 # print(obj.setText("hello"))
@@ -155,15 +125,7 @@ class TestPage(Ui_Form, AbstractPage):
             return False
 
     def setKeyBoard(self, obj):
-        """
-        槽函数
-        设置可以键盘弹出的组件
-        Args:
-            obj: 键盘弹出的组件
 
-        Returns:
-            None
-        """
         self.keyboardtext = KeyBoard()
         self.keyboardtext.text_msg.connect(self.getKeyBoardText)
         obj_name = obj.objectName()
@@ -182,24 +144,12 @@ class TestPage(Ui_Form, AbstractPage):
         self.keyboardtext.showWindow()
 
     def getKeyBoardText(self, msg):
-        """
-        槽函数
-        获取键盘的文本信息
-        Args:
-            msg: 信号，键盘文本信息
 
-        Returns:
-            None
-        """
         self.focusWidget().setText(msg)
         self.focusWidget().clearFocus()
 
     def resetBtn(self):
-        """
-        重置按钮信息，当发生页面跳转时触发
-        Returns:
-            None
-        """
+
         self.ui.btnSwitch.hide()
         self.ui.btnExe.hide()
         self.ui.btnPrint.hide()
@@ -208,11 +158,6 @@ class TestPage(Ui_Form, AbstractPage):
         self.ui.btnReturn.setGeometry(410, 10, 380, 80)
 
     def setAllergenTableView(self):
-        """
-        设置表格过敏原
-        Returns:
-            None
-        """
         f_name = self.ui.modeBox_1.currentText()
         path = frozen.app_path() + r"/res/allergen/"
         f = open(path + f_name, "r", encoding="utf-8")
@@ -245,11 +190,6 @@ class TestPage(Ui_Form, AbstractPage):
                     allergen_table_model.setItem(i, j, item)
 
     def setAllergenCb(self):
-        """
-        添加检测组合
-        Returns:
-            None
-        """
         # 指定要读取的路径
         path = frozen.app_path() + r"/res/allergen/"
         # path = r"/res/allergen/"
@@ -263,15 +203,6 @@ class TestPage(Ui_Form, AbstractPage):
             self.ui.modeBox_1.setCurrentIndex(-1)
 
     def setTableView(self):
-        """
-        设置表格内容，主要是过敏原信息
-        表格为旧表格
-        弃用
-        Returns:
-            None
-        """
-        # 设置行列
-        # 需要改进
         if self.ui.modeBox_1.currentIndex() == -1:
             return
         # self.ui.photolabel.setText("表格生成中。。。")
@@ -318,14 +249,6 @@ class TestPage(Ui_Form, AbstractPage):
                     self.ui.exeTable.setIndexWidget(self.pix_table_model.index(i, j), content_cb)
 
     def takePicture(self, msg):
-        """
-        实现图片提取功能，获取得到的img和pixel信息
-        Args:
-            msg: 信号，测试完后发出的时间信息
-
-        Returns:
-            None
-        """
         cur_time = QDateTime.currentDateTime().toString('yyyy-MM-dd hh:mm:ss')
         # time_now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         pic_path = QDateTime.currentDateTime().toString('yyyy-MM-dd')
@@ -477,11 +400,6 @@ class TestPage(Ui_Form, AbstractPage):
         return
 
     def readPixtableNum(self):
-        """
-        读取表格内容，同时以list形式保存到数据库
-        Returns:
-            list: 读取到表格的过敏原信息
-        """
         reagent_matrix_info = []
         for i in range(self.row_exetable):
             row_list = []
@@ -499,12 +417,6 @@ class TestPage(Ui_Form, AbstractPage):
         return result
 
     def setReagentCb(self):
-        """
-        读取数据库，获取试剂卡规格的信息
-        弃用
-        Returns:
-            None
-        """
         # MySQL语句
         sql = 'SELECT * FROM matrix_table'
         conn = sqlite3.connect(SQL_PATH)
@@ -528,12 +440,6 @@ class TestPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnReturn_clicked(self):
-        """
-        槽函数
-        返回按钮操作
-        Returns:
-            None
-        """
         if self.ui.stackedWidget.currentIndex() == 0:
             page_msg = 'HomePage'
             self.next_page.emit(page_msg)
@@ -549,12 +455,6 @@ class TestPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnConfirm_clicked(self):
-        """
-        槽函数
-        确认按钮操作
-        Returns:
-            None
-        """
         if self.ui.modeBox_1.currentIndex() == -1 or self.ui.nameLine.text() == "" or self.ui.ageLine.text() == "" \
                 or self.ui.departCb.text() == "" or self.ui.docCb.text() == "":
             # m_title = ""
@@ -574,12 +474,6 @@ class TestPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnExe_clicked(self):
-        """
-        槽函数
-        检测按钮操作
-        Returns:
-            None
-        """
         info = "图片生成中。。。"
         dialog = ProcessDialog()
         dialog.setInfo(info)

@@ -1,9 +1,3 @@
-"""
-@Description：检测界面控制类
-@Description：测试用
-@Author：mysondrink@163.com
-@Time：2024/1/15 17:15
-"""
 import cv2 as cv
 import random
 from PySide2.QtCore import QDateTime, Signal
@@ -13,10 +7,10 @@ try:
     import util.frozen as frozen
     import util.dirs as dirs
 except ModuleNotFoundError:
-    from qt0223.controller.AbstractController import AbstractController
-    from qt0223.controller.PicController import MyPicThread
-    import qt0223.util.frozen as frozen
-    import qt0223.util.dirs as dirs
+    from qt0922.controller.AbstractController import AbstractController
+    from qt0922.controller.PicController import MyPicThread
+    import qt0922.util.frozen as frozen
+    import qt0922.util.dirs as dirs
 
 
 FAILED_CODE = 404
@@ -38,14 +32,6 @@ class TestPageController(AbstractController):
         self.mypicthread.start()
 
     def getImgPixel(self, msg):
-        """
-        实现图片提取功能，获取得到的img和pixel信息
-        Args:
-            msg: 信号，测试完后发出的时间信息
-
-        Returns:
-            None
-        """
         cur_time = QDateTime.currentDateTime().toString('yyyy-MM-dd hh:mm:ss')
         # time_now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         pic_path = QDateTime.currentDateTime().toString('yyyy-MM-dd')

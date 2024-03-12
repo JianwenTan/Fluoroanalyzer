@@ -1,32 +1,16 @@
-"""
-@Description：wifi获取
-@Author：mysondrink@163.com
-@Time：2024/1/8 16:29
-"""
 import re
 import os
 try:
     import util.frozen as frozen
 except ImportError:
-    import qt0223.util.frozen as frozen
+    import qt0922.util.frozen as frozen
 
 
-# 连接wifi网络
 class wifisearch():
     def __init__(self) -> object:
-        """
-        构造函数
-        Returns:
-            object: wifi类
-        """
         pass
 
     def getwifiname(self):
-        """
-        获取wifi名str列表
-        Returns:
-            list[str]: wifi名list
-        """
         wifipath = frozen.app_path() + '/res/wifi.ini'
         # cmd_on_wifi = 'sudo nmcli r wifi on'
         # cmd_search_wifi = 'sudo nmcli dev wifi > %s'%wifipath

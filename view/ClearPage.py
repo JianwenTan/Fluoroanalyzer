@@ -1,12 +1,6 @@
-"""
-@Description：存储清理界面显示
-@Author：mysondrink@163.com
-@Time：2024/1/11 10:52
-"""
 import datetime
 try:
     import util.frozen as frozen
-    # from func.infoPage import infoMessage
     from view.gui.clear import *
     # from inf.probeThread import MyProbe
     # from inf.clearThread import ClearThread
@@ -14,33 +8,23 @@ try:
     from controller.ProbeMemController import MyProbe
     from controller.ClearController import ClearThread
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
-    # from func.infoPage import infoMessage
-    from qt0223.view.gui.clear import *
+    import qt0922.util.frozen as frozen
+    from qt0922.view.gui.clear import *
     # from inf.probeThread import MyProbe
     # from inf.clearThread import ClearThread
-    from qt0223.view.AbstractPage import AbstractPage
-    from qt0223.controller.ProbeMemController import MyProbe
-    from qt0223.controller.ClearController import ClearThread
+    from qt0922.view.AbstractPage import AbstractPage
+    from qt0922.controller.ProbeMemController import MyProbe
+    from qt0922.controller.ClearController import ClearThread
 
 
 class ClearPage(Ui_Form, AbstractPage):
     def __init__(self):
-        """
-        构造函数
-        初始化界面信息
-        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
     def InitUI(self):
-        """
-        设置界面相关信息
-        Returns:
-            None
-        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -61,11 +45,6 @@ class ClearPage(Ui_Form, AbstractPage):
         self.setClearBar()
 
     def setClearBar(self):
-        """
-        设置存储条
-        Returns:
-            None
-        """
         memorystr = QStorageInfo().root()
         memorystr.refresh()
         mem_total = memorystr.bytesTotal() / (1024 * 1024 * 1024)
@@ -75,15 +54,6 @@ class ClearPage(Ui_Form, AbstractPage):
         self.ui.clearBar.setValue(int(mem_progress))
 
     def getInfo(self, msg):
-        """
-        槽函数
-        清理结果处理，同时设置进度条显示
-        Args:
-            msg: 信号
-
-        Returns:
-            None
-        """
         self.setClearBar()
         # m_title = "确认"
         # m_title = ""
@@ -95,12 +65,6 @@ class ClearPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnConfirm_clicked(self):
-        """
-        槽函数
-        确认按钮操作
-        Returns:
-            None
-        """
         # pic_path = frozen.app_path() + "/img/"
         # root_list = []
         # dirs_list = []
@@ -149,11 +113,5 @@ class ClearPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnReturn_clicked(self):
-        """
-        槽函数
-        返回按钮操作
-        Returns:
-            None
-        """
         page_msg = 'SysPage'
         self.next_page.emit(page_msg)

@@ -1,19 +1,16 @@
-"""
-@Description：设备信息界面显示
-@Author：mysondrink@163.com
-@Time：2024/1/11 11:04
-"""
 import os
 try:
     import util.frozen as frozen
     from view.gui.about import *
     from view.AbstractPage import AbstractPage, ProcessDialog
     from controller.uploadController import UploadThread
+    from pic_code.img_main import img_main
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
-    from qt0223.view.gui.about import *
-    from qt0223.view.AbstractPage import AbstractPage, ProcessDialog
-    from qt0223.controller.uploadController import UploadThread
+    import qt0922.util.frozen as frozen
+    from qt0922.view.gui.about import *
+    from qt0922.view.AbstractPage import AbstractPage, ProcessDialog
+    from qt0922.controller.uploadController import UploadThread
+    from qt0922.pic_code.img_main import img_main
 
 CONFIG_FILE = frozen.app_path() + r"/config/configname.ini"
 
@@ -24,21 +21,12 @@ class AboutPage(Ui_Form, AbstractPage):
     update_log = Signal(str)
 
     def __init__(self):
-        """
-        构造函数
-        初始化关于界面信息
-        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
     def InitUI(self):
-        """
-        设置界面相关信息
-        Returns:
-            None
-        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -58,12 +46,6 @@ class AboutPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnUpload_clicked(self):
-        """
-        槽函数
-        上传按钮操作
-        Returns:
-            None
-        """
         # self.testinfo = MyTestInfo()
         info = "数据上传中。。。"
         dialog = ProcessDialog()
@@ -103,7 +85,11 @@ class AboutPage(Ui_Form, AbstractPage):
             return
         """
         try:
-            os.system("sudo mount /dev/sda1 /mnt/mydev")
+            Main = img_main()
+            identifier = "0xb7d60506"
+            flag = img_main.mountMove("1", "1", identifier)
+            if flag is not True:
+                raise
         except Exception as e:
             print("aboutPage :", e)
             return False
@@ -118,6 +104,13 @@ class AboutPage(Ui_Form, AbstractPage):
                 upload_file_list.append(path)
             else:
                 print("False")
+                dialog.closeDialog()
+                # m_title = ""
+                # m_info = "上传完成!"
+                # infoMessage(m_info, m_title, 300)
+                info = "上传失败!"
+                self.showInfoDialog(info)
+                self.umountDevice(Main)
         if not upload_file_list:
             try:
                 # self.testinfo.closeWin()
@@ -127,7 +120,7 @@ class AboutPage(Ui_Form, AbstractPage):
                 # infoMessage(m_info, m_title, 300)
                 info = "上传完成!"
                 self.showInfoDialog(info)
-                os.system("sudo umount /mnt/mydev")
+                self.umountDevice(Main)
             except Exception as e:
                 print("aboutPage：", e)
             return
@@ -136,23 +129,17 @@ class AboutPage(Ui_Form, AbstractPage):
             thread = UploadThread(i)
             self.upload_thread_list.append(thread)
             thread.finished.connect(lambda: thread.deleteLater())
-            thread.finished.connect(lambda: self.countUploadThread(dialog))
+            thread.finished.connect(lambda: self.countUploadThread(dialog, Main))
             thread.start()
 
-    def countUploadThread(self, obj):
-        """
-        计数上传完成的线程数
-        计数达到上传数后关闭提示框
-        Args:
-            obj: 提示框
-
-        Returns:
-            None
-        """
+    def countUploadThread(self, obj, func):
         self.count_num = self.count_num + 1
         if len(self.upload_thread_list) <= self.count_num:
             try:
-                os.system("sudo umount /mnt/mydev")
+                if func is not None:
+                    pass
+                else:
+                    self.umountDevice(func)
             except Exception as e:
                 print("aboutPage：", e)
             # self.testinfo.closeWin()
@@ -164,19 +151,14 @@ class AboutPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnReturn_clicked(self):
-        """
-        槽函数
-        返回按钮操作
-        Returns:
-            None
-        """
         page_msg = 'SysPage'
         self.next_page.emit(page_msg)
 
     def getData(self):
-        """
-        数据获取
-        Returns:
-
-        """
         pass
+
+    def umountDevice(self, obj):
+        identifier = "0xb7d60506"
+        flag = obj.mountMove("2", "1", identifier)
+        if flag is not True:
+                raise

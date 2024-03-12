@@ -1,15 +1,10 @@
-"""
-@Description：抽象线程类
-@Author：mysondrink@163.com
-@Time：2024/1/9 10:09
-"""
 import sys
 import traceback
 from PySide2.QtCore import QThread, Signal
 try:
     from controller.LogController import LogThread
 except ModuleNotFoundError:
-    from qt0223.controller.LogController import LogThread
+    from qt0922.controller.LogController import LogThread
 
 
 class AbstractThread(QThread):
@@ -17,9 +12,6 @@ class AbstractThread(QThread):
     update_json = Signal(dict)  # json signal to send data
 
     def __init__(self):
-        """
-        抽象线程类
-        """
         super().__init__()
         self.log_thread = LogThread()
         self.log_thread.start()
@@ -28,17 +20,9 @@ class AbstractThread(QThread):
         sys.excepthook = self.HandleException
 
     def __del__(self):
-        """
-        析构函数，打印类名
-        """
         print(f"delete thread {self.__class__.__name__}")
 
     def deleteLater(self):
-        """
-        打印删除的类的名
-        Returns:
-            None
-        """
         if self.parent() is None:
             pass
         else:
@@ -46,16 +30,6 @@ class AbstractThread(QThread):
             print(f"delete thread {self.__class__.__name__}")
 
     def HandleException(self, excType, excValue, tb):
-        """
-        自动捕获和输出异常类
-        Args:
-            excType: 异常类型
-            excValue: 异常对象
-            tb: 异常的trace back
-
-        Returns:
-
-        """
         print("m_info")
         sys.__excepthook__(excType, excValue, tb)
         # self.old_hook(excType, excValue, tb)
@@ -74,11 +48,6 @@ class AbstractThread(QThread):
         # infoMessage(m_info, m_title, 300)
 
     def sendException(self):
-        """
-        手动发送异常信息
-        Returns:
-            None
-        """
         exc_type, exc_value, exc_traceback = sys.exc_info()
         err_msg = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
         self.update_log.emit(err_msg)

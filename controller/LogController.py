@@ -1,8 +1,3 @@
-"""
-@Description：日志文件类
-@Author：mysondrink@163.com
-@Time：2024/1/8 16:41
-"""
 from PySide2.QtCore import QThread, Signal
 import logging
 import sys
@@ -10,32 +5,20 @@ import traceback
 try:
     import util.frozen as frozen
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
+    import qt0922.util.frozen as frozen
 
 LOG_FILE = frozen.app_path() + r"/log/reagent.log"
 
 
 class LogThread(QThread):
-    error_info = Signal()       # error signal to send system error
+    error_info = Signal()       
 
     def __init__(self, parent=None):
-        """
-        初始化线程
-        构造函数
-        Returns:
-            object
-        """
         super().__init__(parent)
         self.logger = None
         self.log_file = LOG_FILE
 
     def run(self):
-        """
-        线程运行函数
-        进行日志的创建
-        Returns:
-            None
-        """
         try:
             # create an instance logger
             self.logger = logging.getLogger()
@@ -70,14 +53,5 @@ class LogThread(QThread):
             self.logger.warning(err_msg)
 
     def getLogMsg(self, msg):
-        """
-        槽函数
-        获取线程的日志信息
-        Args:
-            msg: 发送的信息
-
-        Returns:
-            None
-        """
         self.error_info.emit()
         self.logger.error(msg)

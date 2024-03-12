@@ -1,12 +1,7 @@
-"""
-@Description：报告单格式化方法
-@Author：mysondrink@163.com
-@Time：2024/3/1 10:47
-"""
 try:
     import util.frozen as frozen
 except:
-    import qt0223.util.frozen as frozen
+    import qt0922.util.frozen as frozen
 
 
 class MyReport():

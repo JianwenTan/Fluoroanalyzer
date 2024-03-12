@@ -1,8 +1,3 @@
-"""
-@Description：加载界面控制
-@Author：mysondrink@163.com
-@Time：2024/1/9 10:54
-"""
 from PySide2.QtCore import Signal, QTimer, QThreadPool
 try:
     from controller.AbstractController import AbstractController
@@ -10,10 +5,10 @@ try:
     from controller.CameraController import CheckCameraThread
     from controller.SerialController import CheckSerialThread
 except ModuleNotFoundError:
-    from qt0223.controller.AbstractController import AbstractController
-    from qt0223.controller.DBController import CheckDataBaseThread
-    from qt0223.controller.CameraController import CheckCameraThread
-    from qt0223.controller.SerialController import CheckSerialThread
+    from qt0922.controller.AbstractController import AbstractController
+    from qt0922.controller.DBController import CheckDataBaseThread
+    from qt0922.controller.CameraController import CheckCameraThread
+    from qt0922.controller.SerialController import CheckSerialThread
 
 FLAG_NUM = 0
 FAILED_CODE = 404
@@ -21,15 +16,10 @@ SUCCEED_CODE = 202
 
 
 class LoadController(AbstractController):
-    update_page = Signal()      # page signal to send next page name
-    update_retry = Signal()     # retry signal to send detection
+    update_page = Signal()      
+    update_retry = Signal()     
 
     def __init__(self) -> object:
-        """
-        初始化类成员变量
-        Returns:
-            None
-        """
         super().__init__()
         self._len = 0
         self.thread_len = 0
@@ -38,11 +28,6 @@ class LoadController(AbstractController):
         self.change_timer = None
 
     def startThread(self):
-        """
-        开启相机、数据库、串口的线程检测
-        Returns:
-            None
-        """
         self.flag_num = FLAG_NUM
         self.thread_list = [CheckCameraThread(), CheckSerialThread(), CheckDataBaseThread()]
         self.thread_id = []
@@ -59,16 +44,6 @@ class LoadController(AbstractController):
 
     # @Slot()
     def setInfoLabel(self, msg):
-        """
-        槽函数
-        开启相机、数据库、串口的线程检测
-        创建线程池来同时检测上述线程
-        Args:
-            msg: 发送来的信号
-
-        Returns:
-            None
-        """
         try:
             info_msg, code_msg, status_msg = msg['info'], msg['code'], msg['status']
             if status_msg in self.thread_id:

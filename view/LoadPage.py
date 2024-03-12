@@ -1,8 +1,3 @@
-"""
-@Description：加载界面
-@Author：mysondrink@163.com
-@Time：2024/1/9 9:56
-"""
 import time
 try:
     from view.AbstractPage import AbstractPage
@@ -26,26 +21,26 @@ try:
     from view.RegPage import RegPage
     from view.UpdatePage import UpdatePage
 except ModuleNotFoundError:
-    from qt0223.view.AbstractPage import AbstractPage
-    from qt0223.controller.BlinkController import CheckBlinkThread
-    from qt0223.controller.LoadController import LoadController
-    import qt0223.util.frozen as frozen
-    from qt0223.view.gui.loading import *
-    from qt0223.view.LoginPage import LoginPage
-    from qt0223.view.HomePage import HomePage
-    from qt0223.view.RegisterPage import RegisterPage
-    from qt0223.view.DataPage import DataPage
-    from qt0223.view.TestPage import TestPage
-    from qt0223.view.PowerPage import PowerPage
-    from qt0223.view.HistoryPage import HistoryPage
-    # from qt0223.view.EditPage import EditPage
-    from qt0223.view.SysPage import SysPage
-    from qt0223.view.WifiPage import WifiPage
-    from qt0223.view.ClearPage import ClearPage
-    # from qt0223.view.SetPage import SetPage
-    from qt0223.view.AboutPage import AboutPage
-    from qt0223.view.RegPage import RegPage
-    from qt0223.view.UpdatePage import UpdatePage
+    from qt0922.view.AbstractPage import AbstractPage
+    from qt0922.controller.BlinkController import CheckBlinkThread
+    from qt0922.controller.LoadController import LoadController
+    import qt0922.util.frozen as frozen
+    from qt0922.view.gui.loading import *
+    from qt0922.view.LoginPage import LoginPage
+    from qt0922.view.HomePage import HomePage
+    from qt0922.view.RegisterPage import RegisterPage
+    from qt0922.view.DataPage import DataPage
+    from qt0922.view.TestPage import TestPage
+    from qt0922.view.PowerPage import PowerPage
+    from qt0922.view.HistoryPage import HistoryPage
+    # from qt0922.view.EditPage import EditPage
+    from qt0922.view.SysPage import SysPage
+    from qt0922.view.WifiPage import WifiPage
+    from qt0922.view.ClearPage import ClearPage
+    # from qt0922.view.SetPage import SetPage
+    from qt0922.view.AboutPage import AboutPage
+    from qt0922.view.RegPage import RegPage
+    from qt0922.view.UpdatePage import UpdatePage
 
 FLAG_NUM = 0
 FAILED_CODE = 404
@@ -54,16 +49,9 @@ CONFIG_FILE = frozen.app_path() + r"/config/configname.ini"
 
 
 class LoadPage(Ui_Form, AbstractPage):
-    """
-    这部分controller只实现线程检测
-    """
+
     def __init__(self):
-        """
-        构造函数
-        初始化类变量
-        Returns:
-            object
-        """
+
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
@@ -83,11 +71,6 @@ class LoadPage(Ui_Form, AbstractPage):
         # self.timer = QTime()
 
     def InitUI(self):
-        """
-        设置界面相关信息
-        Returns:
-            None
-        """
         self.statusShowTime()
         self.title_timer = QTimer()
         self.title_timer.timeout.connect(self.setTitle)
@@ -98,7 +81,7 @@ class LoadPage(Ui_Form, AbstractPage):
         self.ui.btnRetry.hide()
         # self.ui.textEdit.setEnabled(False)
         # self.setWindowFlags(Qt.WindowStaysOnTopHint)
-        self.setWindowFlags(Qt.FramelessWindowHint)  # 去掉窗口状态栏
+        # self.setWindowFlags(Qt.FramelessWindowHint)  # 去掉窗口状态栏
         self.setAttribute(Qt.WA_TranslucentBackground)  # 窗口背景透明
         self.setFocusPolicy(Qt.NoFocus)
         self.ui.centerframe.setFrameStyle(QFrame.NoFrame)
@@ -129,24 +112,11 @@ class LoadPage(Ui_Form, AbstractPage):
         self.controller.startThread()
 
     def setTitle(self):
-        """
-        设置软件名显示
-        Returns:
-            None
-        """
         settings = QSettings(CONFIG_FILE, QSettings.IniFormat)
         settings.setIniCodec("UTF-8")
         self.ui.title_label.setText("  " + settings.value("MACHINE/machine_name"))
 
     def blinkAssess(self, msg):
-        """
-        检测设备wifi连接情况，同时设置图标进行显示
-        Args:
-            msg: wifi连接标志位
-
-        Returns:
-            None
-        """
         self.blink_timer.stop()
         code = msg['code']
         # print(code)
@@ -167,11 +137,6 @@ class LoadPage(Ui_Form, AbstractPage):
             self.blink_timer.start(delay_time)
 
     def blinkIcon(self):
-        """
-        图标闪烁提示
-        Returns:
-            None
-        """
         if self.blink_flag:
             self.blink_flag = False
             self.ui.wifi_label.hide()
@@ -180,14 +145,6 @@ class LoadPage(Ui_Form, AbstractPage):
             self.ui.wifi_label.show()
 
     def mySetIconSize(self, path):
-        """
-        设置按钮图标比例
-        Args:
-            path: 图片路径
-
-        Returns:
-            None
-        """
         img = QImage(path)  # 创建图片实例
         mgnWidth = 30
         mgnHeight = 30  # 缩放宽高尺寸
@@ -198,15 +155,6 @@ class LoadPage(Ui_Form, AbstractPage):
 
     # @Slot()
     def setInfoLabel(self, msg):
-        """
-        槽函数
-        获取相机、数据库、串口的线程检测反馈信息
-        Args:
-            msg: 检测反馈信息
-
-        Returns:
-            None
-        """
         try:
             info_msg = msg['info']
             self.ui.textEdit.append(info_msg)
@@ -215,12 +163,6 @@ class LoadPage(Ui_Form, AbstractPage):
             print(e)
 
     def showPage(self):
-        """
-        槽函数
-        设置主界面中子界面的显示位置，同时显示登录界面
-        Returns:
-            None
-        """
         # print("showPage")
         self.list_widget = []
         if self.flag_num == 0:
@@ -245,15 +187,7 @@ class LoadPage(Ui_Form, AbstractPage):
             self.next_page.emit("LoginPage")
 
     def changePage(self, msg):
-        """
-        槽函数
-        界面跳转
-        Args:
-            msg: 需要跳转的下一个界面
 
-        Returns:
-            None
-        """
         try:
             # 设置栈为2
             num = len(self.list_widget)
@@ -306,47 +240,25 @@ class LoadPage(Ui_Form, AbstractPage):
             # infoMessage(m_info, m_title, 300)
 
     def statusShowTime(self):
-        """
-        设置时间显示，间隔为1秒
-        Returns:
-            None
-        """
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.showCurrentTime)
 
         self.timer.start(1000)
 
     def showCurrentTime(self):
-        """
-        设置显示时间格式
-        Returns:
-            None
-        """
+
         cur_time = QDateTime.currentDateTime()
         time_display = cur_time.toString('yyyy-MM-dd hh:mm:ss dddd')
         self.ui.time_label.setText(time_display)
 
     def retryThread(self):
-        """
-        槽函数
-        显示重试标签、按钮
-        Returns:
-            None
-        """
+
         self.ui.retry_icon_label.show()
         self.ui.btnRetry.show()
 
     def getJsonData(self, msg):
-        """
-        弃用
-        槽函数
-        获取子界面发送的信息，同时发送给其他子界面
-        Args:
-            msg: 发送的信号，获取子页面返回的信号，信号是子界面的信息
 
-        Returns:
-            None
-        """
         self.update_json.connect(self.cur_page.getData)  # 更改，发送给controller
         self.update_json.emit(msg)
 
@@ -366,12 +278,7 @@ class LoadPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnRetry_clicked(self):
-        """
-        槽函数
-        重试按钮，重新进行相机、数据库、串口的线程检测
-        Returns:
-            None
-        """
+
         self.ui.textEdit.clear()
         # self.flag_num = FLAG_NUM
         self.ui.retry_icon_label.hide()

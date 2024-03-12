@@ -1,8 +1,3 @@
-"""
-@Description：软件更新类
-@Author：mysondrink@163.com
-@Time：2024/3/4 13:46
-"""
 import time
 import grpc
 try:
@@ -10,9 +5,9 @@ try:
     import util.frozen as frozen
     from controller.AbstractThread import AbstractThread
 except ModuleNotFoundError:
-    from qt0223.api.update.v1 import update_pb2, update_pb2_grpc
-    import qt0223.util.frozen as frozen
-    from qt0223.controller.AbstractThread import AbstractThread
+    from qt0922.api.update.v1 import update_pb2, update_pb2_grpc
+    import qt0922.util.frozen as frozen
+    from qt0922.controller.AbstractThread import AbstractThread
 
 TIME_TO_SLEEP = 2
 TRYLOCK_TIME = -1
@@ -25,21 +20,9 @@ MY_DIR = frozen.app_path()
 
 class MyUpdateThread(AbstractThread):
     def __init__(self):
-        """
-        构造函数
-        初始化线程，调用父类方法进行日志记录
-        Returns:
-            object
-        """
         super().__init__()
 
     def run(self):
-        """
-        线程运行函数
-        进行数据库的检测
-        Returns:
-            None
-        """
         try:
             # client of update server
             print("Will try to update ...")

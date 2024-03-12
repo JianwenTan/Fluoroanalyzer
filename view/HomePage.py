@@ -1,22 +1,15 @@
-"""
-@Description：菜单界面显示
-@Author：mysondrink@163.com
-@Time：2024/1/11 10:18
-"""
 try:
     import util.frozen as frozen
-    # from func.infoPage import infoMessage
     from view.gui.home import *
-    # from inf.probeThread import MyProbe
     from view.AbstractPage import AbstractPage
     from controller.HomePageController import HomePageController
 except ModuleNotFoundError:
-    import qt0223.util.frozen as frozen
-    # from func.infoPage import infoMessage
-    from qt0223.view.gui.home import *
-    # from inf.probeThread import MyProbe
-    from qt0223.view.AbstractPage import AbstractPage
-    from qt0223.controller.HomePageController import HomePageController
+    import qt0922.util.frozen as frozen
+    from qt0922.view.gui.home import *
+    from qt0922.view.AbstractPage import AbstractPage
+    from qt0922.controller.HomePageController import HomePageController
+
+CONFIG_FILE = frozen.app_path() + r"/config/configname.ini"
 
 
 class HomePage(Ui_Form, AbstractPage):
@@ -25,21 +18,14 @@ class HomePage(Ui_Form, AbstractPage):
     update_log = Signal(str)
 
     def __init__(self):
-        """
-        构造函数
-        初始化菜单界面信息，同时创建记录异常的信息
-        """
+
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.InitUI()
 
     def InitUI(self) -> None:
-        """
-        设置界面相关信息
-        Returns:
-            None
-        """
+
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -50,11 +36,7 @@ class HomePage(Ui_Form, AbstractPage):
         self.ui.btnSet.setText("  仪器设置")
 
     def setBtnIcon(self) -> None:
-        """
-        设置按钮图标
-        Returns:
-            None
-        """
+
         reagent_icon_path = frozen.app_path() + r"/res/icon/reagent.png"
         pixImg = self.mySetIconSize(reagent_icon_path)
         self.ui.reagent_icon_label.setPixmap(pixImg)
@@ -80,14 +62,7 @@ class HomePage(Ui_Form, AbstractPage):
         self.ui.btnPower.setIcon(QIcon(power_icon_path))
 
     def mySetIconSize(self, path) -> QPixmap:
-        """
-        设置按钮图标比例
-        Args:
-            path: 图片路径
 
-        Returns:
-            None
-        """
         img = QImage(path)  # 创建图片实例
         mgnWidth = 50
         mgnHeight = 50  # 缩放宽高尺寸
@@ -97,14 +72,7 @@ class HomePage(Ui_Form, AbstractPage):
         return pixImg
 
     def memWarning(self, msg) -> None:
-        """
-        存储满后警告或直接跳转
-        Args:
-            msg: 存储探测的结果
 
-        Returns:
-            None
-        """
         code = msg['code']
         if code == 404:
             m_title = "警告"
@@ -118,56 +86,37 @@ class HomePage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnPower_clicked(self) -> None:
-        """
-        槽函数
-        电源按钮操作，跳转到电源界面
-        Returns:
-            None
-        """
         page_msg = 'PowerPage'
         self.next_page.emit(page_msg)
 
     @Slot()
     def on_btnData_clicked(self) -> None:
-        """
-        槽函数
-        荧光检测按钮操作，跳转到荧光检测界面
-        Returns:
-            None
-        """
+
         self.controller.startProbeMem()
         # page_msg = 'testPage'
         # self.next_page.emit(page_msg)
 
     @Slot()
     def on_btnHistory_clicked(self) -> None:
-        """
-        槽函数
-        历史记录按钮操作，跳转到历史记录界面
-        Returns:
-            None
-        """
         page_msg = 'HistoryPage'
         self.next_page.emit(page_msg)
 
     @Slot()
     def on_btnSet_clicked(self) -> None:
-        """
-        槽函数
-        仪器设置页面跳转
-        Returns:
-            None
-        """
-        page_msg = 'RegPage'
-        self.next_page.emit(page_msg)
+        if self.checkAdminName():
+            page_msg = 'RegPage'
+            self.next_page.emit(page_msg)
+        else:
+            info = "当前用户没有权限！"
+            self.showInfoDialog(info)
 
     @Slot()
     def on_btnPara_clicked(self) -> None:
-        """
-        槽函数
-        系统设置按钮操作，跳转到系统设置界面
-        Returns:
-            None
-        """
         page_msg = 'SysPage'
         self.next_page.emit(page_msg)
+
+    def checkAdminName(self):
+        settings = QSettings(CONFIG_FILE, QSettings.IniFormat)
+        settings.setIniCodec("UTF-8")
+        admin_name = settings.value("USER/user_name")
+        return True if admin_name == "admin" else False

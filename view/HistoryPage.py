@@ -1,8 +1,3 @@
-"""
-@Description：历史记录界面显示
-@Author：mysondrink@163.com
-@Time：2024/1/11 10:39
-"""
 import os
 import shutil
 import datetime
@@ -18,13 +13,13 @@ try:
     from view.AbstractPage import AbstractPage
     import middleware.database as insertdb
 except ModuleNotFoundError:
-    from qt0223.third_party.keyboard.keyboard import KeyBoard
-    from qt0223.view.gui.history import *
-    from qt0223.util import dirs
-    import qt0223.util.frozen as frozen
-    from qt0223.util.report import MyReport
-    from qt0223.view.AbstractPage import AbstractPage
-    import qt0223.middleware.database as insertdb
+    from qt0922.third_party.keyboard.keyboard import KeyBoard
+    from qt0922.view.gui.history import *
+    from qt0922.util import dirs
+    import qt0922.util.frozen as frozen
+    from qt0922.util.report import MyReport
+    from qt0922.view.AbstractPage import AbstractPage
+    import qt0922.middleware.database as insertdb
 
 page_dict = {'page': 0, 'page_2': 1, 'page_3': 2, 'page_4': 3}
 header_list = ["试剂卡编号", "采样时间",  "病人编号" , "病人姓名"]
@@ -37,10 +32,6 @@ class HistoryPage(Ui_Form, AbstractPage):
     update_log = Signal(str)
 
     def __init__(self):
-        """
-        构造函数
-        初始化界面信息
-        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
@@ -48,11 +39,6 @@ class HistoryPage(Ui_Form, AbstractPage):
         self.page_size = 5
 
     def InitUI(self):
-        """
-        设置界面相关信息
-        Returns:
-            None
-        """
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -75,35 +61,15 @@ class HistoryPage(Ui_Form, AbstractPage):
         # self.setTableWidget()
 
     def installEvent(self):
-        """
-        安装事件监听
-        Returns:
-            None
-        """
         for item in self.focuswidget:
             item.installEventFilter(self)
 
     def setFocusWidget(self):
-        """
-        设置组件点击焦点
-        Returns:
-            None
-        """
         self.focuswidget = [self.ui.lineEdit, self.ui.lineEdit_2]
         for item in self.focuswidget:
             item.setFocusPolicy(Qt.ClickFocus)
 
     def eventFilter(self, obj, event):
-        """
-        槽函数
-        事件过滤
-        Args:
-            obj: 发生事件的组件
-            event: 发生的事件
-
-        Returns:
-            None
-        """
         if obj in self.focuswidget:
             if event.type() == QEvent.Type.FocusIn:
                 # print(obj.setText("hello"))
@@ -115,15 +81,6 @@ class HistoryPage(Ui_Form, AbstractPage):
             return False
 
     def setKeyBoard(self, obj):
-        """
-        槽函数
-        设置可以键盘弹出的组件
-        Args:
-            obj: 键盘弹出的组件
-
-        Returns:
-            None
-        """
         self.keyboardtext = KeyBoard()
         self.keyboardtext.text_msg.connect(self.getKeyBoardText)
         obj_name = obj.objectName()
@@ -136,24 +93,10 @@ class HistoryPage(Ui_Form, AbstractPage):
         self.keyboardtext.showWindow()
 
     def getKeyBoardText(self, msg):
-        """
-        槽函数
-        获取键盘的文本信息
-        Args:
-            msg: 信号，键盘文本信息
-
-        Returns:
-            None
-        """
         self.focusWidget().setText(msg)
         self.focusWidget().clearFocus()
 
     def setBtnIcon(self):
-        """
-        设置按钮图标
-        Returns:
-            None
-        """
         confirm_icon_path = frozen.app_path() + r"/res/icon/confirm.png"
         self.ui.btnConfirm.setIconSize(QSize(32, 32))
         self.ui.btnConfirm.setIcon(QIcon(confirm_icon_path))
@@ -187,12 +130,6 @@ class HistoryPage(Ui_Form, AbstractPage):
         self.ui.btnPrint.setIcon(QIcon(exe_icon_path))
 
     def resetBtn(self):
-        """
-        弃用？
-        重置按钮
-        Returns:
-            None
-        """
         self.ui.btnReport.setText('报告单')
         self.ui.btnReport.hide()
         self.ui.btnDownload.hide()
@@ -200,32 +137,17 @@ class HistoryPage(Ui_Form, AbstractPage):
         self.ui.stackedWidget.setCurrentIndex(1)
 
     def resetBtn_2(self):
-        """
-        查询列表页面跳转
-        Returns:
-            None
-        """
         self.ui.btnNext.show()
         self.ui.btnPre.show()
         self.ui.btnDetail.show()
         self.ui.btnReturn.setGeometry(601, 10, 187, 80)
 
     def resetBtn_3(self):
-        """
-        查询页面跳转
-        Returns:
-            None
-        """
         self.ui.btnNext.hide()
         self.ui.btnPre.hide()
         self.ui.btnDetail.hide()
 
     def setHistoryTable(self):
-        """
-        设置查询页面信息
-        Returns:
-            None
-        """
         if self.page_num < 1:
             self.page_num = 1
             info = "已经是第一页!"
@@ -281,17 +203,6 @@ class HistoryPage(Ui_Form, AbstractPage):
         # self.ui.btnDetail.clicked.connect(self.changePhoto)
 
     def getTotalPage(self, time, item_type, doctor, depart):
-        """
-        获取查询总页数
-        Args:
-            time: 查询的时间
-            item_type: 试剂类型
-            doctor: 医生名
-            depart: 部门名
-
-        Returns:
-            total-page-size: 查询到的总页数
-        """
         offset = 0
         if doctor != '':
             sql = """
@@ -325,11 +236,6 @@ class HistoryPage(Ui_Form, AbstractPage):
         return  math.ceil(insertdb.totalPage(*self.sql_syntax) / self.page_size)
 
     def setAllergenCb(self):
-        """
-        添加检测组合
-        Returns:
-            None
-        """
         # 指定要读取的路径
         path = frozen.app_path() + r"/res/allergen/"
         # path = r"/res/allergen/"
@@ -344,12 +250,7 @@ class HistoryPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnConfirm_clicked(self):
-        """
-        槽函数
-        确认按钮操作
-        Returns:
-            None
-        """
+
         if self.ui.modeBox_3.currentIndex() == -1:
             # m_title = ""
             # m_info = "未选择试剂卡规格！"
@@ -373,35 +274,19 @@ class HistoryPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnPre_clicked(self):
-        """
-        槽函数
-        上一页按钮操作
-        Returns:
-            None
-        """
+
         self.page_num = self.page_num - 1
         self.setHistoryTable()
 
     @Slot()
     def on_btnNext_clicked(self):
-        """
-        槽函数
-        下一页按钮操作
-        Returns:
-            None
-        """
+
         self.page_num = self.page_num + 1
         self.setHistoryTable()
 
     @Slot()
     def on_btnDetail_clicked(self):
-        """
-        槽函数
-        详细按钮操作
-        Returns:
-            None
-        """
-        # 点击空白不显示
+ 
         current_row = self.ui.historyTable.currentIndex().row()
         item = self.select_table_model.item(current_row, 0)
         if item is None:
@@ -416,12 +301,7 @@ class HistoryPage(Ui_Form, AbstractPage):
 
     @Slot()
     def on_btnReturn_clicked(self):
-        """
-        槽函数
-        返回按钮操作
-        Returns:
-            None
-        """
+
         if self.ui.stackedWidget.currentIndex() == 0:
             page_msg = 'HomePage'
             self.next_page.emit(page_msg)

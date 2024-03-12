@@ -1,15 +1,10 @@
-"""
-@Description：
-@Author：mysondrink@163.com
-@Time：2024/2/28 20:09
-"""
 from PySide2.QtCore import QThread, Signal
 import subprocess
 import os
 try:
     from controller.AbstractThread import AbstractThread
 except ModuleNotFoundError:
-    from qt0223.controller.AbstractThread import AbstractThread
+    from qt0922.controller.AbstractThread import AbstractThread
 
 time_to_sleep = 2
 trylock_time = -1
@@ -21,25 +16,11 @@ class WifiThread(AbstractThread):
     update_json = Signal(int)
 
     def __init__(self, wifiSSID, wifiPwd, parent=None):
-        """
-        初始化线程
-        构造函数
-        Args:
-            wifiSSID: wifi名
-            wifiPwd: wifi密码
-            parent: 父类
-        """
         super().__init__()
         self.wifiSSID = wifiSSID
         self.wifiPwd = wifiPwd
 
     def run(self):
-        """
-        线程运行函数
-        进行摄像头的检测
-        Returns:
-            None
-        """
         try:
             print("wifi connecting")
             self.connectWifi(self.wifiSSID, self.wifiPwd)
@@ -47,15 +28,6 @@ class WifiThread(AbstractThread):
             self.sendException()
 
     def connectWifi(self, wifiSSID, wifiPwd):
-        """
-        进行wifi的连接
-        Args:
-            wifiSSID: wifi名
-            wifiPwd: wifi密码
-
-        Returns:
-            None
-        """
         try:
             if len(wifiPwd) != 0:
                 cmd_wifi = 'echo %s | sudo nmcli dev wifi connect %s password %s' % (
