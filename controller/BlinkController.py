@@ -35,6 +35,7 @@ class CheckBlinkThread(AbstractThread):
                         else:
                             flag = 0
                             break
+                    break
                 else:
                     flag = 0
             if flag == 1:

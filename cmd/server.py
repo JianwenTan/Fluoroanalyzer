@@ -99,8 +99,8 @@ class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
         # print(request.name)
         pic_path = datetime.datetime.now().strftime("%Y-%m-%d")
         time_now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        path_cache = frozen.app_path() + r'/pic_code/img/img_cache/'
-        path_save = frozen.app_path() + r'/pic_code/img/img_tem/'
+        path_cache = frozen.app_path() + r'/pic_code/dataset/img_result/img_cache/'
+        path_save = frozen.app_path() + r'/pic_code/dataset/img_result/img_tem/'
 
         try:
             Main = img_main()
@@ -113,8 +113,8 @@ class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
                 raise Exception
             item_type = request.name
             judge_flag, gray_aver, nature_aver = Main.imgProcess(
-                read=frozen.app_path() + r'/pic_code/img/img_tem/' + time_now + '.jpeg',
-                write=frozen.app_path() + r'/pic_code/img/img_out/',
+                read=frozen.app_path() + r'/pic_code/dataset/img_result/img_tem/' + time_now + '.jpeg',
+                write=frozen.app_path() + r'/pic_code/dataset/img_result/img_out/',
                 combina=item_type,
                 radius=40
             )

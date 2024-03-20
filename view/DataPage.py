@@ -185,6 +185,7 @@ class DataPage(Ui_Form, AbstractPage):
         Data_Nature = matrix_nature_aver
         Data_Light = matrix_gray_aver
         Main = img_main()
+        _ = Main.natPrint_init()
         if Main.natPrint(Data_Base, Data_Nature, Data_Light):
             dialog.closeDialog()
             info = "输出表格成功!"

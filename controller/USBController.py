@@ -98,7 +98,7 @@ class CheckUSBThread(QThread):
         """
         save_path = '%s/img/%s/%s.xlsx' % (frozen.app_path(), self.pic_path, self.pic_path)
         dirs.makedir(save_path)
-        save_dir = save_path
+        save_dir = '%s/img/%s/' % (frozen.app_path(), self.pic_path)
         # save_img_path_1 = save_dir + filename + "-" + self.name_pic + "生成图.jpeg"
         # save_img_path_2 = save_dir + filename + "-" + self.name_pic + "检疫图.jpeg"
         if os.path.exists(save_dir):
@@ -175,33 +175,23 @@ class CheckUSBThread(QThread):
                         # 追加
                         newdata.to_excel(writer, sheet_name='Sheet1', index=False, startrow=row1 + 2, header=False)
                         datatwo.to_excel(writer, sheet_name='Sheet2', index=False, startrow=row2 + 1, header=False)
-                        writer.book.close()
-                    # writer =  pd.ExcelWriter(save_path, mode='a', engine='openpyxl', if_sheet_exists='overlay')
-                    # # 追加
-                    # newdata.to_excel(writer, sheet_name='Sheet1', index=False, startrow=row1 + 2, header=False)
-                    # datatwo.to_excel(writer, sheet_name='Sheet2', index=False, startrow=row2 + 1, header=False)
-                    # writer.close()
                 else:
                     with pd.ExcelWriter(save_path, mode='w', engine='openpyxl') as writer:
                         # 新建
                         newdata.to_excel(writer, sheet_name='Sheet1', index=False)
                         datatwo.to_excel(writer, sheet_name='Sheet2', index=False, header=k_2)
-                        writer.book.close()
-                    # writer = pd.ExcelWriter(save_path, mode='w', engine='openpyxl')
-                    # # 新建
-                    # newdata.to_excel(writer, sheet_name='Sheet1', index=False)
-                    # datatwo.to_excel(writer, sheet_name='Sheet2', index=False, header=k_2)
-                    # writer.close()
-                    # path_usb = save_dir + timenow +".xlsx"
-                    # shutil.copy(save_path, path_usb)
                 src_path = '%s/res/test.zip' % frozen.app_path()
                 identifier = "0xb7d60506"
                 Main = img_main()
-                if Main.mountMove(img_origin, save_path, identifier) is not True:
+                save_usb_path = "/mnt/mydev/%s/" % self.pic_path
+                save_usb_path = "/mnt/mydev/"
+                if Main.mountMove(img_origin, save_usb_path, identifier) is not True:
                     raise Exception
-                if Main.mountMove(img_final, save_path, identifier) is not True:
+                if Main.mountMove(img_final, save_usb_path, identifier) is not True:
                     raise Exception
-                if Main.mountMove(src_path, save_path, identifier) is not True:
+                if Main.mountMove(save_path, save_usb_path, identifier) is not True:
+                    raise Exception
+                if Main.mountMove(src_path, save_usb_path, identifier) is not True:
                     raise Exception
             except Exception as e:
                 print(e)

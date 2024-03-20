@@ -286,9 +286,9 @@ class TestPage(Ui_Form, AbstractPage):
             self.update_info.emit(m_info)
             return
 
-        """
-        img_final = cv.imread(frozen.app_path() + r'/pic_code/img/img_out/img_final.jpeg')
-        img_origin = cv.imread(frozen.app_path() + r'/pic_code/img/img_out/img_0ori.jpeg')
+
+        img_final = cv.imread(frozen.app_path() + r'/pic_code/dataset/img_result/img_out/img_final.jpeg')
+        img_origin = cv.imread(frozen.app_path() + r'/pic_code/dataset/img_result/img_out/img_0ori.jpeg')
         # img_show_final = cv.imread(frozen.app_path() + r'/pic_code/img/img_out/img_show_final.jpeg')
         # img_show_origin = cv.imread(frozen.app_path() + r'/pic_code/img/img_out/img_show_0ori.jpeg')
         img_show_final = img_final
@@ -306,8 +306,6 @@ class TestPage(Ui_Form, AbstractPage):
         save_path = frozen.app_path() + r'/img/' + r'/' + pic_path + r'/' + name_pic + '-4.jpeg'
         dirs.makedir(save_path)
         flag_bool = cv.imwrite(save_path, img_show_final)
-        
-        """
 
         page_msg = 'DataPage'
         self.next_page.emit(page_msg)
