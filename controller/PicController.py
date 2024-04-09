@@ -49,7 +49,7 @@ class MyPicThread(AbstractThread):
                     flag=False,
                 )
             )
-            self.sendException()
+            # self.sendException()
 
     def setType(self, item_type):
         self.item_type = item_type

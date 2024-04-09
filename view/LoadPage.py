@@ -196,7 +196,7 @@ class LoadPage(Ui_Form, AbstractPage):
                 self._s.removeWidget(self._s.currentWidget())
                 self.list_widget.remove(self.list_widget[1])
                 self.p_ptr -= 1
-                temp.close()
+                temp.deleteLater()
                 return
             # if num > 1:
             #     self._s.removeWidget(self.list_widget[0])
@@ -223,7 +223,7 @@ class LoadPage(Ui_Form, AbstractPage):
                 self._s.removeWidget(self.list_widget[0])
                 self.list_widget.remove(self.list_widget[0])
                 self.p_ptr += 1
-                temp.close()
+                temp.deleteLater()
                 time.sleep(0.5)
 
             self._s.addWidget(self.cur_page)

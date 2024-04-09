@@ -87,7 +87,8 @@ class AboutPage(Ui_Form, AbstractPage):
         try:
             Main = img_main()
             identifier = "0xb7d60506"
-            flag = img_main.mountMove("1", "1", identifier)
+            # flag = img_main.mountMove("1", "1", identifier)
+            flag = Main.mountMove("1", "1", identifier)
             if flag is not True:
                 raise
         except Exception as e:

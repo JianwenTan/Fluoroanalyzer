@@ -104,6 +104,8 @@ class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
 
         try:
             Main = img_main()
+            _ = Main.imgLed_init()
+            _ = Main.imgCamera_init()
             Camera_Init_flag = Main.imgAcquire(
                 path_chache=path_cache,
                 path_save=path_save,
@@ -112,12 +114,22 @@ class ImgProcesser(imgprocess_pb2_grpc.ImgProcesserServicer):
             if Camera_Init_flag is not True:
                 raise Exception
             item_type = request.name
-            judge_flag, gray_aver, nature_aver = Main.imgProcess(
-                read=frozen.app_path() + r'/pic_code/dataset/img_result/img_tem/' + time_now + '.jpeg',
-                write=frozen.app_path() + r'/pic_code/dataset/img_result/img_out/',
+
+            result_imgprocess = Main.imgProcess(
+                read=frozen.app_path() + r'/pic_code/img/img_tem/' + time_now + '.jpeg',
+                write=frozen.app_path() + r'/pic_code/img/img_out/',
                 combina=item_type,
                 radius=40
             )
+            if len(result_imgprocess) == 3:
+                judge_flag, gray_aver, nature_aver = result_imgprocess
+            else:
+                print("error para!")
+                raise Exception
+
+            if type(judge_flag) is not bool:
+                print("judge_flag type is: ", type(judge_flag))
+                raise Exception
             if judge_flag is not True:
                 raise Exception
             w, h = nature_aver.shape

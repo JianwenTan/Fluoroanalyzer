@@ -233,7 +233,7 @@ class HistoryPage(Ui_Form, AbstractPage):
             self.sql_total = [sql, item_type, time]
             self.sql_syntax = [sql_2, item_type, time, offset]
         # SELECT * FROM users LIMIT 10 OFFSET 20;
-        return  math.ceil(insertdb.totalPage(*self.sql_syntax) / self.page_size)
+        return  math.ceil(insertdb.totalPage(*self.sql_total) / self.page_size)
 
     def setAllergenCb(self):
         # 指定要读取的路径

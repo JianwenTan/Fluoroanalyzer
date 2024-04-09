@@ -136,18 +136,22 @@ class DataPage(Ui_Form, AbstractPage):
         self.ui.tableWidget.setLayout(v)
 
     def getUSBInfo(self, msg):
+        print(msg)
+        self.checkUserOperation(True)
         if msg == 202:
-            self.usbthread.deleteLater()
             info = "下载完成！"
             self.showInfoDialog(info)
         elif msg == 404:
-            self.usbthread.deleteLater()
             info = "U盘未插入或无法访问！"
             self.showInfoDialog(info)
         elif msg == 405:
-            self.usbthread.deleteLater()
             info = "图片读取失败或未找到图片！"
             self.showInfoDialog(info)
+    
+    def checkUserOperation(self, flag):
+        self.ui.btnPrint.setEnabled(flag)
+        self.ui.btnDownload.setEnabled(flag)
+        self.ui.btnReturn.setEnabled(flag)
 
     def showDataView(self, data):
         title_list = ["定位点", "", "", "", "定位点"]
@@ -172,6 +176,7 @@ class DataPage(Ui_Form, AbstractPage):
         dialog.hideBtn()
         dialog.show()
         print("print")
+        self.checkUserOperation(False)
         time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         test_time = self.test_time
         Data_Base = [self.data['patient_name'], self.data['patient_gender'], self.data['patient_id'],
@@ -194,28 +199,33 @@ class DataPage(Ui_Form, AbstractPage):
             dialog.closeDialog()
             info = "输出表格失败!"
             self.update_info.emit(info)
+        self.checkUserOperation(True)
 
     @Slot()
     def on_btnDownload_clicked(self):
         print("Download")
+        self.checkUserOperation(False)
         name = self.data['name_pic']
         path = self.data['pic_path']
         data = self.data
-        self.usbthread = CheckUSBThread(name, path, data, self.data['point_str'] + ',' + self.allergy_info)
-        self.usbthread.update_json.connect(self.getUSBInfo)
+        usbthread = CheckUSBThread(name, path, data, self.data['point_str'] + ',' + self.allergy_info)
+        usbthread.update_json.connect(self.getUSBInfo)
+        loop = QEventLoop()
+        usbthread.update_json.connect(loop.quit)
         # 创建定时器
         self.download_timer = QTimer()
-        self.download_timer.timeout.connect(self.usbthread.start)
+        self.download_timer.timeout.connect(usbthread.start)
         self.download_timer.timeout.connect(self.download_timer.stop)
         # 设置定时器延迟时间，单位为毫秒
         # 延迟2秒跳转
-        delay_time = 2000
+        delay_time = 1000
         self.download_timer.start(delay_time)
-        m_title = ""
-        m_info = "下载中..."
+        # m_title = ""
+        # m_info = "下载中..."
         # infoMessage(m_info, m_title, 300)
         info = "下载中..."
         self.showInfoDialog(info)
+        loop.exec_()
 
     @Slot()
     def on_btnData_clicked(self):
